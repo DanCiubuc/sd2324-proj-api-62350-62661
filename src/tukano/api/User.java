@@ -7,7 +7,6 @@ public class User {
 	private String userId;
 	private String displayName;
 
-	// hello goodbye holla pls wrod
 	public User() {
 	}
 
