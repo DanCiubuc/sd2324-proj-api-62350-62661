@@ -6,7 +6,7 @@ import tukano.api.Short;
 import tukano.api.java.Result;
 import tukano.api.java.Shorts;
 
-public class ShortsJava implements Shorts {
+public class JavaShorts implements Shorts {
 
     @Override
     public Result<Short> createShort(String userId, String password) {
