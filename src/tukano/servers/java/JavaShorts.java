@@ -1,16 +1,33 @@
 package tukano.servers.java;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 import tukano.api.Short;
 import tukano.api.java.Result;
 import tukano.api.java.Shorts;
 
 public class JavaShorts implements Shorts {
+    // TODO: get instance of UserResource and BlobsResource
+
+    private final Map<String, Short> shorts = new HashMap<>();
+
+    private static Logger Log = Logger.getLogger(JavaShorts.class.getName());
 
     @Override
     public Result<Short> createShort(String userId, String password) {
         // TODO Auto-generated method stub
+        // Shorts server verifies user/pwd and
+        // returns location for blob
+
+        // #1) get user, in order to verify that the userId is valid. I don't think you
+        // need to create a Shorts map inside of the User class.
+        // #2) create the short and put it into map
+        // #3) return location of the blob where the short was stored:
+        // http://{name_of_the_blob}:8080/rest/blobs/{blob_id}
+
         throw new UnsupportedOperationException("Unimplemented method 'createShort'");
     }
 
