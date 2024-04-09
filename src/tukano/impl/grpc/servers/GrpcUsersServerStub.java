@@ -5,7 +5,6 @@ import static tukano.impl.grpc.common.DataModelAdaptor.User_to_GrpcUser;
 import io.grpc.BindableService;
 import io.grpc.ServerServiceDefinition;
 import io.grpc.stub.StreamObserver;
-import jakarta.ws.rs.WebApplicationException;
 import tukano.api.java.Result;
 import tukano.api.User;
 import tukano.api.java.Users;
