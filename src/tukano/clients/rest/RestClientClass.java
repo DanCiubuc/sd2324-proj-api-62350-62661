@@ -1,6 +1,8 @@
 package tukano.clients.rest;
 
 import tukano.api.User;
+import utils.Discovery;
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.logging.Logger;
@@ -8,10 +10,12 @@ import java.util.logging.Logger;
 public class RestClientClass {
     private static Logger Log = Logger.getLogger(RestClientClass.class.getName());
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         String command = args[0];
-        String serverUrl = args[1];
-        var client = new RestUsersClient( URI.create( serverUrl ) );
+        String serviceName = args[1];
+        Discovery disc = Discovery.getInstance();
+        URI serverUrl = disc.knownUrisOf(serviceName, 1);
+        var client = new RestUsersClient(serverUrl);
 
         switch (command) {
             case "create":
@@ -33,8 +37,9 @@ public class RestClientClass {
     }
 
     private static void createUser(String[] args, RestUsersClient client) throws IOException {
-        if( args.length != 6) {
-            System.err.println( "Use: java tukano.clients.rest.RestClientClass create url userId password email displayName ");
+        if (args.length != 6) {
+            System.err.println(
+                    "Use: java tukano.clients.rest.RestClientClass create url userId password email displayName ");
             return;
         }
 
@@ -43,19 +48,19 @@ public class RestClientClass {
         String email = args[4];
         String displayName = args[5];
 
-        var user = new User( userId, password, email, displayName);
+        var user = new User(userId, password, email, displayName);
 
-        var result = client.createUser( user );
+        var result = client.createUser(user);
 
-        if( result.isOK()  )
-            Log.info("Created user:" + result.value() );
+        if (result.isOK())
+            Log.info("Created user:" + result.value());
         else
             Log.info("Create user failed with error: " + result.error());
     }
 
     private static void getUser(String[] args, RestUsersClient client) throws IOException {
-        if( args.length != 4) {
-            System.err.println( "Use: java tukano.clients.rest.RestClientClass get url userId password");
+        if (args.length != 4) {
+            System.err.println("Use: java tukano.clients.rest.RestClientClass get url userId password");
             return;
         }
 
@@ -63,15 +68,16 @@ public class RestClientClass {
         String pwd = args[3];
 
         var result = client.getUser(userId, pwd);
-        if( result.isOK()  )
-            Log.info("Get user:" + result.value() );
+        if (result.isOK())
+            Log.info("Get user:" + result.value());
         else
             Log.info("Get user failed with error: " + result.error());
     }
 
     private static void updateUser(String[] args, RestUsersClient client) throws IOException {
-        if( args.length != 6) {
-            System.err.println( "Use: java tukano.clients.rest.RestClientClass update url userId password email displayName");
+        if (args.length != 6) {
+            System.err.println(
+                    "Use: java tukano.clients.rest.RestClientClass update url userId password email displayName");
             return;
         }
 
@@ -80,43 +86,42 @@ public class RestClientClass {
         String email = args[4];
         String displayName = args[5];
 
-        var user = new User( userId, password, email, displayName);
+        var user = new User(userId, password, email, displayName);
 
         var result = client.updateUser(userId, password, user);
-        if( result.isOK()  )
-            Log.info("Updated user:" + result.value() );
+        if (result.isOK())
+            Log.info("Updated user:" + result.value());
         else
             Log.info("Update user failed with error: " + result.error());
     }
 
     private static void deleteUser(String[] args, RestUsersClient client) throws IOException {
-        if( args.length != 4) {
-            System.err.println( "Use: java tukano.clients.rest.RestClientClass delete url userId password ");
+        if (args.length != 4) {
+            System.err.println("Use: java tukano.clients.rest.RestClientClass delete url userId password ");
             return;
         }
 
         String userId = args[2];
         String password = args[3];
 
-
         var result = client.deleteUser(userId, password);
-        if( result.isOK()  )
-            Log.info("Deleted user:" + result.value() );
+        if (result.isOK())
+            Log.info("Deleted user:" + result.value());
         else
             Log.info("Delete user failed with error: " + result.error());
     }
 
     private static void searchUsers(String[] args, RestUsersClient client) throws IOException {
         if (args.length != 3) {
-            System.err.println( "Use: java tukano.clients.rest.RestClientClass search url pattern ");
+            System.err.println("Use: java tukano.clients.rest.RestClientClass search url pattern ");
             return;
         }
 
         String pattern = args[2];
 
         var result = client.searchUsers(pattern);
-        if(result.isOK())
-            Log.info("Searched users:" + result.value() );
+        if (result.isOK())
+            Log.info("Searched users:" + result.value());
         else
             Log.info("Search users failed with error: " + result.error());
     }

@@ -1,5 +1,8 @@
 package tukano.api;
 
+import jakarta.persistence.Entity;
+
+@Entity
 public class User {
 
 	private String pwd;
