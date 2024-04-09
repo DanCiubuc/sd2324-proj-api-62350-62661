@@ -28,19 +28,19 @@ COPY target/*jar-with-dependencies.jar sd.jar
 # docker run -it --network sdnet sd2324-tp1-api-xxxxx-yyyyy /bin/bash
 
 # Create User
-# java -cp sd.jar tukano.clients.rest.RestClientClass create http://users-1:8080/rest nmp 12345 nmp@nova.pt "Nuno Preguica"
+# java -cp sd.jar tukano.clients.rest.RestClientClass create UsersService nmp 12345 nmp@nova.pt "Nuno Preguica"
 
 # Get User
-# java -cp sd.jar tukano.clients.rest.RestClientClass get http://users-1:8080/rest nmp 12345
+# java -cp sd.jar tukano.clients.rest.RestClientClass get UsersService nmp 12345
 
 # Update User
-# java -cp sd.jar tukano.clients.rest.RestClientClass update http://users-1:8080/rest nmp 12345 hahaha@nova.pt "João Bombaclaat"
+# java -cp sd.jar tukano.clients.rest.RestClientClass update UsersService nmp 12345 hahaha@nova.pt "João Bombaclaat"
 
 # Delete User
-# java -cp sd.jar tukano.clients.rest.RestClientClass delete http://users-1:8080/rest nmp 12345
+# java -cp sd.jar tukano.clients.rest.RestClientClass delete UsersService nmp 12345
 
 # Search Users
-# java -cp sd.jar tukano.clients.rest.RestClientClass delete http://users-1:8080/rest nmp
+# java -cp sd.jar tukano.clients.rest.RestClientClass delete UsersService nmp
 
 ############################################################# GRPC ################################################################################
 
