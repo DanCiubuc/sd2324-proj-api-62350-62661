@@ -19,7 +19,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class RestUsersClient implements Users {
+public class RestUsersClient extends RestClient implements Users {
 
     private static Logger Log = Logger.getLogger(RestUsersClient.class.getName());
 
@@ -182,6 +182,21 @@ public class RestUsersClient implements Users {
             }
         }
         return Result.error(  Result.ErrorCode.TIMEOUT );
+    }
+
+    private Result<String> clt_createUser(User user) {
+        return super.toJavaResult(
+                target.request()
+                        .accept(MediaType.APPLICATION_JSON)
+                        .post(Entity.entity(user, MediaType.APPLICATION_JSON)), String.class );
+    }
+
+    private Result<User> clt_getUser(String userId, String pwd) {
+        return super.toJavaResult(
+                target.path( userId )
+                        .queryParam(RestUsers.PWD, pwd).request()
+                        .accept(MediaType.APPLICATION_JSON)
+                        .get(), User.class);
     }
 
     public static ErrorCode getErrorCodeFrom(int status) {

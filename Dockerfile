@@ -40,7 +40,10 @@ COPY target/*jar-with-dependencies.jar sd.jar
 # java -cp sd.jar tukano.clients.rest.RestClientClass delete UsersService nmp 12345
 
 # Search Users
-# java -cp sd.jar tukano.clients.rest.RestClientClass delete UsersService nmp
+# java -cp sd.jar tukano.clients.rest.RestClientClass search UsersService nmp
+
+# Upload Blobs
+# java -cp sd.jar tukano.clients.rest.RestBlobsClientClass upload http://80:80/rest nmp fileName
 
 ############################################################# GRPC ################################################################################
 
@@ -54,10 +57,10 @@ COPY target/*jar-with-dependencies.jar sd.jar
 # docker run -it --network sdnet sd2324-tp1-api-xxxxx-yyyyy java -cp sd.jar tukano.impl.grpc.clients.GrpcClientClass get grpc://users-1:9000/gprc nmp 12345
 
 # Update User
-# docker run -it --network sdnet sd2324-tp1-api-xxxxx-yyyyy java -cp sd.jar tukano.impl.grpc.clients.GrpcClientClass update http://users-1:8080/rest nmp 12345 hahaha@nova.pt "João Bombaclaat"
+# docker run -it --network sdnet sd2324-tp1-api-xxxxx-yyyyy java -cp sd.jar tukano.impl.grpc.clients.GrpcClientClass update grpc://users-1:9000/gprc nmp 12345 hahaha@nova.pt "João Bombaclaat"
 
 # Delete User
-# docker run -it --network sdnet sd2324-tp1-api-xxxxx-yyyyy java -cp sd.jar tukano.impl.grpc.clients.GrpcClientClass delete http://users-1:8080/rest nmp 12345
+# docker run -it --network sdnet sd2324-tp1-api-xxxxx-yyyyy java -cp sd.jar tukano.impl.grpc.clients.GrpcClientClass delete grpc://users-1:9000/gprc nmp 12345
 
 # Search Users
-# docker run -it --network sdnet sd2324-tp1-api-xxxxx-yyyyy java -cp sd.jar tukano.impl.grpc.clients.GrpcClientClass delete http://users-1:8080/rest nmp
+# docker run -it --network sdnet sd2324-tp1-api-xxxxx-yyyyy java -cp sd.jar tukano.impl.grpc.clients.GrpcClientClass searcg grpc://users-1:9000/gprc nmp

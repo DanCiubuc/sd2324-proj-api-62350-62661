@@ -18,6 +18,10 @@ public class JavaShorts implements Shorts {
     private final Map<String, Short> userShorts = new HashMap<>();
     private final Map<String, List<User>> followers = new HashMap<>();
 
+    // Each short has a number of blobs
+    // So each blobId -> short
+    private final Map<String, Short> blobs = new HashMap<>();
+
     // private final RestUsersResource userResource = ;
 
     private static Logger Log = Logger.getLogger(JavaShorts.class.getName());

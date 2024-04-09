@@ -39,7 +39,7 @@ public class RestClientClass {
     private static void createUser(String[] args, RestUsersClient client) throws IOException {
         if (args.length != 6) {
             System.err.println(
-                    "Use: java tukano.clients.rest.RestClientClass create url userId password email displayName ");
+                    "Use: java tukano.clients.rest.RestClientClass create UsersService userId password email displayName ");
             return;
         }
 
@@ -60,7 +60,7 @@ public class RestClientClass {
 
     private static void getUser(String[] args, RestUsersClient client) throws IOException {
         if (args.length != 4) {
-            System.err.println("Use: java tukano.clients.rest.RestClientClass get url userId password");
+            System.err.println("Use: java tukano.clients.rest.RestClientClass get UsersService userId password");
             return;
         }
 
@@ -77,7 +77,7 @@ public class RestClientClass {
     private static void updateUser(String[] args, RestUsersClient client) throws IOException {
         if (args.length != 6) {
             System.err.println(
-                    "Use: java tukano.clients.rest.RestClientClass update url userId password email displayName");
+                    "Use: java tukano.clients.rest.RestClientClass update UsersService userId password email displayName");
             return;
         }
 
@@ -97,7 +97,7 @@ public class RestClientClass {
 
     private static void deleteUser(String[] args, RestUsersClient client) throws IOException {
         if (args.length != 4) {
-            System.err.println("Use: java tukano.clients.rest.RestClientClass delete url userId password ");
+            System.err.println("Use: java tukano.clients.rest.RestClientClass delete UsersService userId password ");
             return;
         }
 
@@ -113,7 +113,7 @@ public class RestClientClass {
 
     private static void searchUsers(String[] args, RestUsersClient client) throws IOException {
         if (args.length != 3) {
-            System.err.println("Use: java tukano.clients.rest.RestClientClass search url pattern ");
+            System.err.println("Use: java tukano.clients.rest.RestClientClass search UsersService pattern ");
             return;
         }
 

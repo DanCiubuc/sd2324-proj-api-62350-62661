@@ -44,9 +44,6 @@ public class JavaUsers implements Users {
             Log.info("Name or Password null.");
             return Result.error( ErrorCode.BAD_REQUEST);
         }
-        if(users.isEmpty()) {
-            Log.info("Users is Empty");
-        }
 
         User user = users.get(userId);
         // Check if user exists
