@@ -34,11 +34,11 @@ public class RestClient {
             var status = r.getStatusInfo().toEnum();
             if (status == Response.Status.OK && r.hasEntity())
                 return ok(r.readEntity(entityType));
-            else
-            if( status == Response.Status.NO_CONTENT) return ok();
+            else if (status == Response.Status.NO_CONTENT) return ok();
 
             return error(getErrorCodeFrom(status.getStatusCode()));
         } finally {
             r.close();
         }
     }
+}
