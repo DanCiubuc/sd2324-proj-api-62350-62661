@@ -3,6 +3,8 @@ package tukano.servers.rest;
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
+import utils.Discovery;
+
 import java.net.InetAddress;
 import java.net.URI;
 import java.util.logging.Logger;
@@ -27,6 +29,10 @@ public class RestShortsServer {
             String ip = InetAddress.getLocalHost().getHostAddress();
             String serverURI = String.format(SERVER_URI_FMT, ip, PORT);
             JdkHttpServerFactory.createHttpServer(URI.create(serverURI), config);
+
+            Discovery disc = Discovery.getInstance();
+
+            disc.announce(SERVICE, serverURI);
 
             Log.info(String.format("%s Server ready @ %s\n", SERVICE, serverURI));
 

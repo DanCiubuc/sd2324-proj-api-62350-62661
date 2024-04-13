@@ -17,30 +17,32 @@ public class RestUsersResource implements RestUsers {
     final Users impl;
 
     public RestUsersResource() {
-        this.impl = new JavaUsers();}
+        this.impl = new JavaUsers();
+    }
+
     @Override
     public String createUser(User user) {
-        return resultOrThrow( impl.createUser( user ));
+        return resultOrThrow(impl.createUser(user));
     }
 
     @Override
     public User getUser(String userId, String pwd) {
-        return resultOrThrow( impl.getUser(userId, pwd));
+        return resultOrThrow(impl.getUser(userId, pwd));
     }
 
     @Override
     public User updateUser(String userId, String pwd, User user) {
-        return resultOrThrow( impl.updateUser(userId, pwd, user));
+        return resultOrThrow(impl.updateUser(userId, pwd, user));
     }
 
     @Override
     public User deleteUser(String userId, String pwd) {
-        return resultOrThrow( impl.deleteUser(userId, pwd));
+        return resultOrThrow(impl.deleteUser(userId, pwd));
     }
 
     @Override
     public List<User> searchUsers(String pattern) {
-        return resultOrThrow( impl.searchUsers(pattern));
+        return resultOrThrow(impl.searchUsers(pattern));
     }
 
     /**
@@ -53,7 +55,6 @@ public class RestUsersResource implements RestUsers {
         else
             throw new WebApplicationException(statusCodeFrom(result));
     }
-
 
     /**
      * Translates a Result<T> to a HTTP Status code

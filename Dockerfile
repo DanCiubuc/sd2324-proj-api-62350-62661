@@ -30,6 +30,10 @@ COPY target/*jar-with-dependencies.jar sd.jar
 # Create User
 # java -cp sd.jar tukano.clients.rest.RestClientClass create UsersService nmp 12345 nmp@nova.pt "Nuno Preguica"
 
+
+# Create Short
+# java -cp sd.jar tukano.clients.rest.RestShortsClientClass create shorts nmp 12345
+
 # Get User
 # java -cp sd.jar tukano.clients.rest.RestClientClass get UsersService nmp 12345
 

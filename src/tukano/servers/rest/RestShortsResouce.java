@@ -1,64 +1,100 @@
 package tukano.servers.rest;
 
 import java.util.List;
+import java.util.logging.Logger;
 
+import jakarta.inject.Singleton;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response.Status;
+
+import tukano.api.java.Result;
 import tukano.api.Short;
+import tukano.api.java.Shorts;
 import tukano.api.rest.RestShorts;
+import tukano.servers.java.JavaShorts;
 
+@Singleton
 public class RestShortsResouce implements RestShorts {
 
+    final Shorts impl;
+
+    private static Logger Log = Logger.getLogger(RestShortsResouce.class.getName());
+
+    public RestShortsResouce() {
+        this.impl = new JavaShorts();
+    }
+
     @Override
-    public Short createShort(String userId, String password) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createShort'");
+    public Short createShort(String userId, String password) throws InterruptedException {
+        return resultOrThrow(impl.createShort(userId, password));
     }
 
     @Override
     public void deleteShort(String shortId, String password) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteShort'");
+        resultOrThrow(impl.deleteShort(shortId, password));
     }
 
     @Override
     public Short getShort(String shortId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getShort'");
+        return resultOrThrow(impl.getShort(shortId));
+
     }
 
     @Override
     public List<String> getShorts(String userId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getShorts'");
+        return resultOrThrow(impl.getShorts(userId));
     }
 
     @Override
     public void follow(String userId1, String userId2, boolean isFollowing, String password) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'follow'");
+        resultOrThrow(impl.follow(userId1, userId2, isFollowing, password));
     }
 
     @Override
     public List<String> followers(String userId, String password) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'followers'");
+        return resultOrThrow(impl.followers(userId, password));
     }
 
     @Override
     public void like(String shortId, String userId, boolean isLiked, String password) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'like'");
+        resultOrThrow(impl.like(shortId, userId, isLiked, password));
     }
 
     @Override
     public List<String> likes(String shortId, String password) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'likes'");
+        return resultOrThrow(impl.likes(shortId, password));
     }
 
     @Override
     public List<String> getFeed(String userId, String password) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getFeed'");
+        return resultOrThrow(impl.getFeed(userId, password));
+    }
+
+    /**
+     * Given a Result<T>, either returns the value, or throws the JAX-WS Exception
+     * matching the error code...
+     */
+    protected <T> T resultOrThrow(Result<T> result) {
+        if (result.isOK())
+            return result.value();
+        else
+            throw new WebApplicationException(statusCodeFrom(result));
+    }
+
+    /**
+     * Translates a Result<T> to a HTTP Status code
+     */
+    private static Status statusCodeFrom(Result<?> result) {
+        return switch (result.error()) {
+            case CONFLICT -> Status.CONFLICT;
+            case NOT_FOUND -> Status.NOT_FOUND;
+            case FORBIDDEN -> Status.FORBIDDEN;
+            case BAD_REQUEST -> Status.BAD_REQUEST;
+            case INTERNAL_ERROR -> Status.INTERNAL_SERVER_ERROR;
+            case NOT_IMPLEMENTED -> Status.NOT_IMPLEMENTED;
+            case OK -> result.value() == null ? Status.NO_CONTENT : Status.OK;
+            default -> Status.INTERNAL_SERVER_ERROR;
+        };
     }
 
 }

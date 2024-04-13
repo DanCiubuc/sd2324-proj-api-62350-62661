@@ -68,6 +68,7 @@ class DiscoveryImpl implements Discovery {
     private static final int MAX_DATAGRAM_SIZE = 65536;
 
     private static Discovery singleton;
+    private boolean clientGotUri = false;
 
     synchronized static Discovery getInstance() {
         if (singleton == null) {
@@ -122,7 +123,9 @@ class DiscoveryImpl implements Discovery {
         }
 
         // System.out.println(mapping);
-
+        // flag to signal to the listener thread that this instance of discovery no
+        // longer is necessary, since the client already got the service he wanted
+        clientGotUri = true;
         // Return all URIs for the service name (modify if needed)
         return mapping.get(serviceName);
     }
@@ -136,6 +139,9 @@ class DiscoveryImpl implements Discovery {
                 ms.joinGroup(DISCOVERY_ADDR, NetworkInterface.getByInetAddress(InetAddress.getLocalHost()));
                 for (;;) {
                     try {
+                        if (clientGotUri) {
+                            break;
+                        }
                         var pkt = new DatagramPacket(new byte[MAX_DATAGRAM_SIZE], MAX_DATAGRAM_SIZE);
                         ms.receive(pkt);
 
