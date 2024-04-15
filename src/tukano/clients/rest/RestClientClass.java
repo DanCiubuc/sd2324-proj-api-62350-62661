@@ -14,7 +14,7 @@ public class RestClientClass {
         String command = args[0];
         String serviceName = args[1];
         Discovery disc = Discovery.getInstance();
-        URI serverUrl = disc.knownUrisOf(serviceName, 1);
+        URI serverUrl = disc.knownUrisOf(serviceName, 1).get(0);
         var client = new RestUsersClient(serverUrl);
 
         switch (command) {

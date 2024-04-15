@@ -16,7 +16,7 @@ public class RestShortsServer {
         System.setProperty("java.net.preferIPv4Stack", "true");
     }
 
-    public static final int PORT = 8080;
+    public static final int PORT = 4567;
     public static final String SERVICE = "shorts";
     private static final String SERVER_URI_FMT = "http://%s:%s/rest";
 
@@ -26,8 +26,7 @@ public class RestShortsServer {
             ResourceConfig config = new ResourceConfig();
             config.register(RestShortsResouce.class);
 
-            String ip = InetAddress.getLocalHost().getHostAddress();
-            String serverURI = String.format(SERVER_URI_FMT, ip, PORT);
+            String serverURI = String.format(SERVER_URI_FMT, SERVICE, PORT);
             JdkHttpServerFactory.createHttpServer(URI.create(serverURI), config);
 
             Discovery disc = Discovery.getInstance();

@@ -1,6 +1,8 @@
 package utils;
 
 import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -32,7 +34,7 @@ public interface Discovery {
      * @return array with the discovered URIs for the given service name.
      * @throws InterruptedException
      */
-    public URI knownUrisOf(String serviceName, int minReplies) throws InterruptedException;
+    public List<URI> knownUrisOf(String serviceName, int minReplies) throws InterruptedException;
 
     /**
      * Get the instance of the Discovery service
@@ -108,10 +110,10 @@ class DiscoveryImpl implements Discovery {
         }).start();
     }
 
-    private final Map<String, URI> mapping = new ConcurrentHashMap<>(); // Thread-safe map
+    private final Map<String, List<URI>> mapping = new ConcurrentHashMap<>(); // Thread-safe map
 
     @Override
-    public synchronized URI knownUrisOf(String serviceName, int minEntries) throws InterruptedException {
+    public synchronized List<URI> knownUrisOf(String serviceName, int minEntries) throws InterruptedException {
         long startTime = System.currentTimeMillis();
         while (mapping.get(serviceName) == null || mapping.size() < minEntries) {
             long elapsedTime = System.currentTimeMillis() - startTime;
@@ -152,7 +154,14 @@ class DiscoveryImpl implements Discovery {
                         if (parts.length == 2) {
                             var serviceName = parts[0];
                             var uri = URI.create(parts[1]);
-                            mapping.put(serviceName, uri);
+
+                            if (mapping.get(serviceName) == null) {
+                                mapping.put(serviceName, new ArrayList<>());
+                            }
+
+                            List<URI> serviceUris = mapping.get(serviceName);
+                            serviceUris.add(uri);
+                            mapping.put(serviceName, serviceUris);
                         }
 
                     } catch (Exception x) {

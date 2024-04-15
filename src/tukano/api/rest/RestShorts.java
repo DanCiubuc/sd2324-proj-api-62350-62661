@@ -29,6 +29,9 @@ public interface RestShorts {
 	String SHORTS = "/shorts";
 	String FOLLOWERS = "/followers";
 
+	String VERIFY = "/verify";
+	String BLOB_ID = "blobId";
+
 	@POST
 	@Path("/{" + USER_ID + "}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -74,4 +77,8 @@ public interface RestShorts {
 	@Path("/{" + USER_ID + "}" + FEED)
 	@Produces(MediaType.APPLICATION_JSON)
 	List<String> getFeed(@PathParam(USER_ID) String userId, @QueryParam(PWD) String password);
+
+	@POST
+	@Path("/{" + BLOB_ID + "}" + VERIFY)
+	void verifyBlobId(@PathParam(BLOB_ID) String blobId);
 }

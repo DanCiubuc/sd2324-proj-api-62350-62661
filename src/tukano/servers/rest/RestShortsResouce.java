@@ -70,6 +70,11 @@ public class RestShortsResouce implements RestShorts {
         return resultOrThrow(impl.getFeed(userId, password));
     }
 
+    @Override
+    public void verifyBlobId(String blobId) {
+        resultOrThrow(impl.verifyBlobId(blobId));
+    }
+
     /**
      * Given a Result<T>, either returns the value, or throws the JAX-WS Exception
      * matching the error code...

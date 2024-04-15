@@ -12,7 +12,7 @@ public class RestBlobsClientClass {
     public static void main(String[] args) throws IOException, InterruptedException {
         String command = args[0];
         String url = args[1];
-        var client = new RestBlobsClient(URI.create( url ));
+        var client = new RestBlobsClient(URI.create(url));
 
         switch (command) {
             case "upload":
@@ -27,7 +27,7 @@ public class RestBlobsClientClass {
     private static void upload(String[] args, RestBlobsClient client) throws IOException {
         if (args.length != 4) {
             System.err.println(
-                    "Use: java tukano.clients.rest.RestClientClass upload url blobId fileName ");
+                    "Use: java tukano.clients.rest.RestClientClass upload url fileName ");
             return;
         }
         String blobId = args[2];
@@ -35,11 +35,13 @@ public class RestBlobsClientClass {
 
         try (FileInputStream fis = new FileInputStream(fileName)) {
             byte[] bytes = new byte[fis.available()]; // Create a byte array to store the read bytes
-            int bytesRead  = fis.read(bytes); // Read bytes from the file
+            int bytesRead = fis.read(bytes); // Read bytes from the file
 
             Log.info("Bytes read from file: " + bytesRead);
 
             var result = client.upload(blobId, bytes);
+
+            Log.info(result.toString());
 
             if (result.isOK())
                 Log.info("Uploaded file:" + result.value());

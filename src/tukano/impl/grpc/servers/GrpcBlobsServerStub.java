@@ -12,10 +12,14 @@ import tukano.impl.grpc.generated_java.BlobsProtoBuf.DownloadArgs;
 import tukano.impl.grpc.generated_java.BlobsProtoBuf.UploadArgs;
 import tukano.impl.grpc.generated_java.BlobsProtoBuf.DownloadResult;
 import tukano.impl.grpc.generated_java.BlobsProtoBuf.UploadResult;
+
 public class GrpcBlobsServerStub implements BlobsGrpc.AsyncService, BindableService {
     Blobs impl = new JavaBlobs();
+
     @Override
-    public ServerServiceDefinition bindService() { return BlobsGrpc.bindService(this);}
+    public ServerServiceDefinition bindService() {
+        return BlobsGrpc.bindService(this);
+    }
 
     @Override
     public void upload(UploadArgs request, StreamObserver<UploadResult> responseObserver) {
@@ -39,8 +43,8 @@ public class GrpcBlobsServerStub implements BlobsGrpc.AsyncService, BindableServ
         }
     }
 
-    protected static Throwable errorCodeToStatus( Result.ErrorCode error ) {
-        var status =  switch( error) {
+    protected static Throwable errorCodeToStatus(Result.ErrorCode error) {
+        var status = switch (error) {
             case NOT_FOUND -> io.grpc.Status.NOT_FOUND;
             case CONFLICT -> io.grpc.Status.ALREADY_EXISTS;
             case FORBIDDEN -> io.grpc.Status.PERMISSION_DENIED;
