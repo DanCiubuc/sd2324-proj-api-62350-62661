@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import com.google.rpc.context.AttributeContext.Response;
 
+import tukano.api.Follow;
 import tukano.api.Short;
 import tukano.api.User;
 import tukano.api.java.Result;
@@ -19,9 +20,11 @@ import tukano.api.java.Result.ErrorCode;
 import tukano.api.java.Users;
 import tukano.clients.BlobsClientFactory;
 import tukano.clients.UsersClientFactory;
+import tukano.persistence.Hibernate;
 
 public class JavaShorts implements Shorts {
     private final Map<String, Short> shorts = new HashMap<>();
+
     private final Map<String, List<Short>> userShorts = new HashMap<>();
     private final Map<String, List<String>> userFollowers = new HashMap<>();
     private final Map<String, List<String>> shortLikes = new HashMap<>();
@@ -53,69 +56,25 @@ public class JavaShorts implements Shorts {
 
         // Create the short object
         String shortId = rndId();
-        Short shortObj = new Short(shortId, userId, "ola");
-
-        // Store the object on the maps
-        // TODO: integrate with hibernate
-        shorts.put(shortId, shortObj);
-
-        if (userShorts.get(userId) == null) {
-            userShorts.put(userId, new ArrayList<>());
-        }
-        List<Short> userArchive = userShorts.get(userId);
-        userArchive.add(shortObj);
-
-        Log.info("Done Archiving short");
+        Short shortObj = new Short(shortId, userId, "BLOB_URL");
 
         String blobLocation = getBlobLocation(shortId);
         shortObj.setBlobUrl(blobLocation);
 
+        // Store the object on the maps
+        // TODO: integrate with hibernate
+        Hibernate.getInstance().persist(shortObj);
         return Result.ok(shortObj);
     }
 
     @Override
-    public Result<Void> deleteShort(String shortId, String password) {
-        Log.info("Info Received deleteShort : shortId = " + shortId + "; password = " + password);
-
-        Short shortObj = shorts.get(shortId);
-
-        if (shortObj == null) {
-            Log.info("Short does not exist.");
-            return Result.error(ErrorCode.NOT_FOUND);
-        }
-
-        String ownerId = shortObj.getOwnerId();
-
-        // Communicate with User Service to verify if the password is valid
-        Users users = UsersClientFactory.getClient();
-
-        if (users.getUser(ownerId, password).error().equals(ErrorCode.FORBIDDEN)) {
-            Log.info("Incorrect password.");
-            return Result.error(ErrorCode.FORBIDDEN);
-        }
-
-        // Start removing
-        shorts.remove(shortId);
-        blobs.remove(shortId);
-
-        // Remove short from user archive, and update it
-        List<Short> userArchive = userShorts.get(ownerId);
-        userArchive.remove(shortObj);
-        userShorts.put(ownerId, userArchive);
-
-        // TODO: add removeShort to Blobs, so any videos associated with this Short gets
-        // deleted from the blobs server
-
-        return Result.ok();
-    }
-
-    @Override
     public Result<Short> getShort(String shortId) {
-        Short shortObj = shorts.get(shortId);
-        if (shortObj == null) {
+        List<Short> shorts_list = getShortHibernate(shortId);
+        if (shorts_list.isEmpty()) {
             Log.info("No Short with given Id.");
             return Result.error(ErrorCode.NOT_FOUND);
         }
+        Short shortObj = shorts_list.get(0);
         return Result.ok(shortObj);
     }
 
@@ -128,18 +87,53 @@ public class JavaShorts implements Shorts {
             Log.info("User doesn't exist.");
             return Result.error(ErrorCode.NOT_FOUND);
         }
-        userShorts.putIfAbsent(userId, new ArrayList<>());
+        List<Short> shorts = Hibernate.getInstance().sql(String.format("SELECT * FROM Short s WHERE s.ownerId LIKE '%%%s%%'", userId), Short.class);
         List<String> result = new ArrayList<String>();
-        userShorts.get(userId).forEach((s) -> result.add(s.getShortId()));
+        for(Short s : shorts) {
+            result.add(s.getShortId());
+        }
         return Result.ok(result);
+    }
+
+    @Override
+    public Result<Void> deleteShort(String shortId, String password) {
+        Log.info("Info Received deleteShort : shortId = " + shortId + "; password = " + password);
+        List<Short> shorts_list = getShortHibernate(shortId);
+
+        if (shorts_list.isEmpty()) {
+            Log.info("Short does not exist.");
+            return Result.error(ErrorCode.NOT_FOUND);
+        }
+
+        Short shortObj = shorts_list.get(0);
+
+        String ownerId = shortObj.getOwnerId();
+
+        // Communicate with User Service to verify if the password is valid
+        Users users = UsersClientFactory.getClient();
+
+        if (users.getUser(ownerId, password).error().equals(ErrorCode.FORBIDDEN)) {
+            Log.info("Incorrect password.");
+            return Result.error(ErrorCode.FORBIDDEN);
+        }
+
+        // Start removing
+        Hibernate.getInstance().delete(shortObj);
+
+        // TODO: add removeShort to Blobs, so any videos associated with this Short gets
+        // deleted from the blobs server
+        //blobs.remove(shortId);
+
+        return Result.ok();
     }
 
     @Override
     public Result<Void> follow(String userId1, String userId2, boolean isFollowing, String password) {
         Users users = UsersClientFactory.getClient();
 
-        if (users.getUser(userId1, password).error().equals(ErrorCode.NOT_FOUND)
-                || users.getUser(userId2, password).error().equals(ErrorCode.NOT_FOUND)) {
+        ErrorCode error1 = users.searchUsers(userId1).error();
+        ErrorCode error2 = users.searchUsers(userId2).error();
+        if(error1.equals(ErrorCode.BAD_REQUEST) || error2.equals(ErrorCode.BAD_REQUEST)) {
             Log.info("One of the users doesn't exist.");
             return Result.error(ErrorCode.NOT_FOUND);
         }
@@ -149,19 +143,23 @@ public class JavaShorts implements Shorts {
             return Result.error(ErrorCode.FORBIDDEN);
         }
 
-        // if the user is not in the map
-        userFollowers.putIfAbsent(userId1, new ArrayList<String>());
-
         if (isFollowing) {
-            List<String> user1Followers = userFollowers.get(userId1);
-            user1Followers.add(userId2);
-            userFollowers.put(userId1, user1Followers);
+            List<Follow> list_follow = getFollower(userId2);
+            if(!list_follow.isEmpty()) {
+                Log.info("Already Following User.");
+                return Result.error(ErrorCode.CONFLICT);
+            }
+            Follow follow = new Follow(userId2, userId1);
+            Hibernate.getInstance().persist(follow);
         } else {
-            List<String> user1Followers = userFollowers.get(userId1);
-            user1Followers.remove(userId2);
-            userFollowers.put(userId1, user1Followers);
+            List<Follow> list_follow = getFollower(userId2);
+            if(list_follow.isEmpty()) {
+                Log.info("Not Following User.");
+                return Result.error(ErrorCode.CONFLICT);
+            }
+            Follow f = list_follow.get(0);
+            Hibernate.getInstance().delete(f);
         }
-
         return Result.ok();
     }
 
@@ -179,9 +177,7 @@ public class JavaShorts implements Shorts {
             Log.info("Password incorect.");
         }
 
-        List<String> flws = userFollowers.get(userId);
-
-        List<String> result = (flws == null) ? (new ArrayList<String>()) : flws;
+        List<String> result = getFollowers(userId);
 
         return Result.ok(result);
     }
@@ -312,6 +308,24 @@ public class JavaShorts implements Shorts {
         String uuid16digits = uuid.substring(uuid.length() - 16);
 
         return uuid16digits;
+    }
+
+    private List<Short> getShortHibernate(String shortId) {
+        return Hibernate.getInstance().sql(String.format("SELECT * FROM Short s WHERE s.shortId LIKE '%%%s%%'", shortId), Short.class);
+    }
+
+    private List<Follow> getFollower(String follower) {
+        return Hibernate.getInstance().sql(String.format("SELECT * FROM Follow f WHERE f.following LIKE '%%%s%%'", follower), Follow.class);
+    }
+
+    private List<String> getFollowers(String follower) {
+        List<String> fol_list = new ArrayList<>();
+        List<Follow> followers =  Hibernate.getInstance().sql(String.format("SELECT * FROM Follow f WHERE f.following LIKE '%%%s%%'", follower), Follow.class);
+        for(Follow f : followers) {
+           String follower_id = f.getFollowedBy();
+            fol_list.add(follower_id);
+        }
+        return fol_list;
     }
 
 }

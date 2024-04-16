@@ -26,7 +26,8 @@ public class RestShortsServer {
             ResourceConfig config = new ResourceConfig();
             config.register(RestShortsResouce.class);
 
-            String serverURI = String.format(SERVER_URI_FMT, SERVICE, PORT);
+            String ip = InetAddress.getLocalHost().getHostAddress();
+            String serverURI = String.format(SERVER_URI_FMT, ip, PORT);
             JdkHttpServerFactory.createHttpServer(URI.create(serverURI), config);
 
             Discovery disc = Discovery.getInstance();

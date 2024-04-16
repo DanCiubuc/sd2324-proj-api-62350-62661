@@ -116,19 +116,20 @@ class DiscoveryImpl implements Discovery {
     public synchronized List<URI> knownUrisOf(String serviceName, int minEntries) throws InterruptedException {
         long startTime = System.currentTimeMillis();
         while (mapping.get(serviceName) == null || mapping.size() < minEntries) {
+            /*
             long elapsedTime = System.currentTimeMillis() - startTime;
             if (elapsedTime > DISCOVERY_RETRY_TIMEOUT) {
                 // Timeout reached, return null or empty array
                 return null;
-            }
-            wait(DISCOVERY_RETRY_TIMEOUT - elapsedTime); // Wait for remaining timeout
+            }*/
+            wait(DISCOVERY_RETRY_TIMEOUT ); // Wait for remaining timeout
         }
-
+        /*
         // System.out.println(mapping);
         // flag to signal to the listener thread that this instance of discovery no
         // longer is necessary, since the client already got the service he wanted
         clientGotUri = true;
-        // Return all URIs for the service name (modify if needed)
+        // Return all URIs for the service name (modify if needed) */
         return mapping.get(serviceName);
     }
 

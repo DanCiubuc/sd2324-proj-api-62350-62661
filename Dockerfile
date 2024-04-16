@@ -15,9 +15,14 @@ COPY target/*jar-with-dependencies.jar sd2324.jar
 
 # mvn clean compile assembly:single docker:build
 
+############################################################# TESTER ################################################################################
+# sh test-sd-tp1.sh -image sd2324-tp1-api-xxxxx-yyyyy
+# sh test-sd-tp1.sh -image sd2324-tp1-api-xxxxx-yyyyy -test num -log ALL
+
+
 ############################################################# REST ################################################################################
 
-# Start User Server
+# Start Server
 # docker run --rm -h users --name users --network sdnet -p 3456:3456 sd2324-tp1-api-xxxxx-yyyyy java -cp sd.jar tukano.servers.rest.RestUsersServer
 
 # Start Shorts Server
@@ -36,7 +41,7 @@ COPY target/*jar-with-dependencies.jar sd2324.jar
 # Create User
 # java -cp sd.jar tukano.clients.rest.RestClientClass create users nmp 12345 nmp@nova.pt "Nuno Preguica"
 
-#  java -cp sd.jar tukano.clients.rest.RestClientClass create users jb 12345 jb@nova.pt "Joao Bombaclat"
+# java -cp sd.jar tukano.clients.rest.RestClientClass create users jb 12345 jb@nova.pt "Joao Bombaclat"
 
 # Create Shorts
 # java -cp sd.jar tukano.clients.rest.RestShortsClientClass create shorts nmp 12345
@@ -53,7 +58,7 @@ COPY target/*jar-with-dependencies.jar sd2324.jar
 # Substitute the first argument with the url of the blob server, and the second one with the blobId created during the Create Short command
 
 # Delete Short
-#java -cp sd.jar tukano.clients.rest.RestShortsClientClass delete shorts shortId 12345
+# java -cp sd.jar tukano.clients.rest.RestShortsClientClass delete shorts shortId 12345
 
 # Follow
 # java -cp sd.jar tukano.clients.rest.RestShortsClientClass follow shorts nmp jb true 12345

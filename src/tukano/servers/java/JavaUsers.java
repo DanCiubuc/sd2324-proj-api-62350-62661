@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import tukano.api.User;
 import tukano.api.java.Result;
@@ -14,9 +15,6 @@ import tukano.api.java.Users;
 import tukano.persistence.Hibernate;
 
 public class JavaUsers implements Users {
-
-    private final Map<String, User> users = new HashMap<>();
-
     private static Logger Log = Logger.getLogger(JavaUsers.class.getName());
 
     @Override
@@ -30,7 +28,7 @@ public class JavaUsers implements Users {
         }
 
         // Check if user with same userId already exists
-        List<User> existingUsers = Hibernate.getInstance().sql(String.format("SELECT * FROM User u WHERE u.userId LIKE '%%%s%%'", user.getUserId()), User.class);
+        List<User> existingUsers = getUserHibernate(user.getUserId());
         // Insert user, checking if name already exists
         if(!existingUsers.isEmpty()) {
             Log.info("User already exists.");
@@ -50,13 +48,13 @@ public class JavaUsers implements Users {
             return Result.error(ErrorCode.BAD_REQUEST);
         }
 
-        User user = users.get(userId);
+        List<User> existingUsers = getUserHibernate(userId);
         // Check if user exists
-        if (user == null) {
+        if (existingUsers.isEmpty()) {
             Log.info("User does not exist.");
             return Result.error(ErrorCode.NOT_FOUND);
         }
-
+        User user = existingUsers.get(0);
         // Check if the password is correct
         if (!user.pwd().equals(pwd)) {
             Log.info("Password is incorrect.");
@@ -76,25 +74,28 @@ public class JavaUsers implements Users {
             return Result.error(ErrorCode.BAD_REQUEST);
         }
 
-        // The id of the USer can't be changed
+        // The id of the User can't be changed
         if (user.getUserId() != null) {
             Log.info("Can't change userId.");
             return Result.error(ErrorCode.BAD_REQUEST);
         }
 
+        List<User> existingUsers = getUserHibernate(userId);
+
         // Check if user exists
-        if (users.get(userId) == null) {
+        if (existingUsers.isEmpty()) {
             Log.info("User does not exist.");
             return Result.error(ErrorCode.NOT_FOUND);
         }
 
+        User newUserInfo = existingUsers.get(0);
+
         // Check if the password is correct
-        if (!users.get(userId).getPwd().equals(pwd)) {
+        if (!newUserInfo.getPwd().equals(pwd)) {
             Log.info("Password is incorrect.");
             return Result.error(ErrorCode.FORBIDDEN);
         }
 
-        User newUserInfo = users.get(userId);
 
         if (user.getPwd() != null) {
             newUserInfo.setPwd(user.getPwd());
@@ -107,9 +108,7 @@ public class JavaUsers implements Users {
         if (user.getEmail() != null) {
             newUserInfo.setEmail(user.getEmail());
         }
-
-        users.put(userId, newUserInfo);
-
+        Hibernate.getInstance().update(newUserInfo);
         return Result.ok(newUserInfo);
     }
 
@@ -122,19 +121,19 @@ public class JavaUsers implements Users {
             return Result.error(ErrorCode.BAD_REQUEST);
         }
 
-        User user = users.get(userId);
+        List<User> existingUsers = getUserHibernate(userId);
         // Check if user exists
-        if (user == null) {
+        if (existingUsers.isEmpty()) {
             Log.info("User does not exist.");
             return Result.error(ErrorCode.NOT_FOUND);
         }
-
+        User user = existingUsers.get(0);
         // Check if the password is correct
         if (!user.pwd().equals(pwd)) {
             Log.info("Password is incorrect.");
             return Result.error(ErrorCode.FORBIDDEN);
         }
-        users.remove(userId);
+        Hibernate.getInstance().delete(user);
         return Result.ok(user);
     }
 
@@ -142,22 +141,42 @@ public class JavaUsers implements Users {
     public Result<List<User>> searchUsers(String pattern) {
         Log.info("Info Received searchUsers : pattern = " + pattern);
         List<User> userList = new ArrayList<>();
-        if (users.isEmpty()) {
-            return Result.ok(userList);
-        } else if (pattern == null) {
-            userList.addAll(users.values());
+        List<User> existing_users= Hibernate.getInstance().sql("SELECT * FROM User", User.class);
+
+        if (pattern == null || pattern.trim().isEmpty()) {
+            for(int i = 0; i < existing_users.size(); i++) {
+                userList.add(i, existing_users.get(i));
+            }
             return Result.ok(userList);
         } else {
-            String[] brokenPattern = pattern.split(" ");
-
-            for (String s : brokenPattern) {
-                if (users.containsKey(s)) {
-                    User user = users.get(s);
-                    userList.add(userList.size(), user);
+            for (User user : existing_users) {
+                String userId = user.getUserId();
+                if (userId.toLowerCase().contains(pattern.toLowerCase())) {
+                    userList.add(user);
                 }
             }
-
-        }
+            }
         return Result.ok(userList);
+    }
+
+    private List<User> getUserHibernate(String userId) {
+        return Hibernate.getInstance().sql(String.format("SELECT * FROM User u WHERE u.userId LIKE '%%%s%%'", userId), User.class);
+    }
+
+    private List<User> matchPattern (String pattern) {
+        String regexPattern = Pattern.quote(pattern);
+        // Convert '*' wildcard to regular expression equivalent '.+'
+        regexPattern = regexPattern.replaceAll("\\*", ".+");
+        Pattern compiledPattern = Pattern.compile(regexPattern);
+
+        List<User> existing_users= Hibernate.getInstance().sql("SELECT * FROM User u", User.class);
+        List<User> userList = new ArrayList<>();
+        for (User user : existing_users) {
+            String userId = user.getUserId();
+            if (compiledPattern.matcher(userId).matches()) {
+                userList.add(user);
+            }
+        }
+        return userList;
     }
 }

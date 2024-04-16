@@ -39,7 +39,6 @@ public class BlobsClientFactory {
     public static List<URI> getBlobsUris() throws InterruptedException {
         Discovery disc = Discovery.getInstance();
         blobsUris = disc.knownUrisOf("blobs", 1);
-
         return blobsUris;
     }
 }
