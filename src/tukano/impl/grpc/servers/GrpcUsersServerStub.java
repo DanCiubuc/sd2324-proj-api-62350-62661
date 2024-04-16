@@ -85,9 +85,11 @@ public class GrpcUsersServerStub implements UsersGrpc.AsyncService, BindableServ
 		else {
 			List<User> list = res.value();
 			SearchUserResult.Builder searchUserResultBuilder = SearchUserResult.newBuilder();
+			int cont = 0;
             for (User user : list) {
 				GrpcUser grpcUser = User_to_GrpcUser(user); // Assuming you have a method to convert User to GrpcUser
-				searchUserResultBuilder.addUsers(grpcUser);
+				searchUserResultBuilder.setUsers(cont, grpcUser);
+				cont++;
             }
 			responseObserver.onNext( searchUserResultBuilder.build());
 			responseObserver.onCompleted();

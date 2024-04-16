@@ -10,6 +10,7 @@ import tukano.api.User;
 import tukano.api.java.Result;
 import tukano.api.java.Result.ErrorCode;
 import tukano.api.java.Users;
+import tukano.persistence.Hibernate;
 
 public class JavaUsers implements Users {
 
@@ -27,12 +28,15 @@ public class JavaUsers implements Users {
             return Result.error( ErrorCode.BAD_REQUEST);
         }
 
+        // Check if user with same userId already exists
+        List<User> existingUsers = Hibernate.getInstance().sql(String.format("SELECT * FROM User u WHERE u.userId LIKE '%%%s%%'", user.getUserId()), User.class);
         // Insert user, checking if name already exists
-        if( users.putIfAbsent(user.userId(), user) != null ) {
+        if(!existingUsers.isEmpty()) {
             Log.info("User already exists.");
             return Result.error( ErrorCode.CONFLICT);
         }
 
+        Hibernate.getInstance().persist(user);
         return Result.ok( user.userId() );
     }
 

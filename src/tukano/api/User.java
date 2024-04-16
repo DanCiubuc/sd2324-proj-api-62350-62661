@@ -1,10 +1,11 @@
 package tukano.api;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 @Entity
 public class User {
-
+	@Id
 	private String pwd;
 	private String email;
 	private String userId;
