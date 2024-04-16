@@ -1,19 +1,13 @@
-# base ubuntu official image 
-FROM ubuntu
-
-# run a command (install a package)
-RUN apt-get update && apt-get install iproute2 -y
-
-# Copy openjdk 17 from another image
-ENV JAVA_HOME=/opt/java/openjdk
-COPY --from=eclipse-temurin:17 $JAVA_HOME $JAVA_HOME
-ENV PATH=$PATH:$JAVA_HOME/bin
+FROM smduarte/sd2324testerbase
 
 # working directory inside docker image
 WORKDIR /home/sd
 
+ADD hibernate.cfg.xml .
+ADD shorts.props .
+
 # copy the jar created by assembly to the docker image
-COPY target/*jar-with-dependencies.jar sd.jar
+COPY target/*jar-with-dependencies.jar sd2324.jar
 
 # cd IdeaProjects/sd2324-proj-api-62350-62661
 

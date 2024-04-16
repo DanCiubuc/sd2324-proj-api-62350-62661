@@ -1,5 +1,6 @@
 package tukano.servers.java;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +14,7 @@ import tukano.api.java.Users;
 
 public class JavaUsers implements Users {
 
-    private final Map<String,User> users = new HashMap<>();
+    private final Map<String, User> users = new HashMap<>();
 
     private static Logger Log = Logger.getLogger(JavaUsers.class.getName());
 
@@ -22,40 +23,40 @@ public class JavaUsers implements Users {
         Log.info("Info Received createUser : " + user);
 
         // Check if user data is valid
-        if(user.userId() == null || user.pwd() == null || user.displayName() == null || user.email() == null) {
+        if (user.userId() == null || user.pwd() == null || user.displayName() == null || user.email() == null) {
             Log.info("User object invalid.");
-            return Result.error( ErrorCode.BAD_REQUEST);
+            return Result.error(ErrorCode.BAD_REQUEST);
         }
 
         // Insert user, checking if name already exists
-        if( users.putIfAbsent(user.userId(), user) != null ) {
+        if (users.putIfAbsent(user.userId(), user) != null) {
             Log.info("User already exists.");
-            return Result.error( ErrorCode.CONFLICT);
+            return Result.error(ErrorCode.CONFLICT);
         }
 
-        return Result.ok( user.userId() );
+        return Result.ok(user.userId());
     }
 
     @Override
     public Result<User> getUser(String userId, String pwd) {
         Log.info("Info Received getUser : userId = " + userId + "; pwd = " + pwd);
         // Check if user is valid
-        if(userId == null || pwd == null) {
+        if (userId == null || pwd == null) {
             Log.info("Name or Password null.");
-            return Result.error( ErrorCode.BAD_REQUEST);
+            return Result.error(ErrorCode.BAD_REQUEST);
         }
 
         User user = users.get(userId);
         // Check if user exists
-        if( user == null ) {
+        if (user == null) {
             Log.info("User does not exist.");
-            return Result.error( ErrorCode.NOT_FOUND);
+            return Result.error(ErrorCode.NOT_FOUND);
         }
 
-        //Check if the password is correct
-        if( !user.pwd().equals( pwd)) {
+        // Check if the password is correct
+        if (!user.pwd().equals(pwd)) {
             Log.info("Password is incorrect.");
-            return Result.error( ErrorCode.FORBIDDEN);
+            return Result.error(ErrorCode.FORBIDDEN);
         }
 
         return Result.ok(user);
@@ -63,26 +64,49 @@ public class JavaUsers implements Users {
 
     @Override
     public Result<User> updateUser(String userId, String pwd, User user) {
-        Log.info("Info Received updateUser : userId = " + userId + "; pwd = " + pwd + "; email = " + user.getEmail() + "; displayName = " + user.getDisplayName());
+        Log.info("Info Received updateUser : userId = " + userId + "; pwd = " + pwd + "; email = " + user.getEmail()
+                + "; displayName = " + user.getDisplayName());
         // Check if user is valid
         if (userId == null || pwd == null) {
-            Log.info("Name or Password null.");
+            Log.info("Name/Password null.");
+            return Result.error(ErrorCode.BAD_REQUEST);
+        }
+
+        // The id of the USer can't be changed
+        if (user.getUserId() != null) {
+            Log.info("Can't change userId.");
             return Result.error(ErrorCode.BAD_REQUEST);
         }
 
         // Check if user exists
-        if (users.get(user.getUserId()) == null) {
+        if (users.get(userId) == null) {
             Log.info("User does not exist.");
             return Result.error(ErrorCode.NOT_FOUND);
         }
 
-        //Check if the password is correct
-        if (!user.pwd().equals(pwd)) {
+        // Check if the password is correct
+        if (!users.get(userId).getPwd().equals(pwd)) {
             Log.info("Password is incorrect.");
             return Result.error(ErrorCode.FORBIDDEN);
         }
-        users.replace(userId, user);
-        return Result.ok(user);
+
+        User newUserInfo = users.get(userId);
+
+        if (user.getPwd() != null) {
+            newUserInfo.setPwd(user.getPwd());
+        }
+
+        if (user.getDisplayName() != null) {
+            newUserInfo.setDisplayName(user.displayName());
+        }
+
+        if (user.getEmail() != null) {
+            newUserInfo.setEmail(user.getEmail());
+        }
+
+        users.put(userId, newUserInfo);
+
+        return Result.ok(newUserInfo);
     }
 
     @Override
@@ -101,7 +125,7 @@ public class JavaUsers implements Users {
             return Result.error(ErrorCode.NOT_FOUND);
         }
 
-        //Check if the password is correct
+        // Check if the password is correct
         if (!user.pwd().equals(pwd)) {
             Log.info("Password is incorrect.");
             return Result.error(ErrorCode.FORBIDDEN);
