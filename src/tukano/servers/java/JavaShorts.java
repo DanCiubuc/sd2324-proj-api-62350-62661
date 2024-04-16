@@ -28,7 +28,7 @@ public class JavaShorts implements Shorts {
     private static Logger Log = Logger.getLogger(JavaShorts.class.getName());
 
     @Override
-    public Result<Short> createShort(String userId, String password) throws InterruptedException {
+    public Result<Short> createShort(String userId, String password) {
         Log.info("Info Received createShort : " + userId + " " + password);
 
         Users userService = UsersClientFactory.getClient();
@@ -273,15 +273,22 @@ public class JavaShorts implements Shorts {
         return Result.ok();
     }
 
-    private String getBlobLocation(String shortId) throws InterruptedException {
-        URI blobUri = BlobsClientFactory.getUri();
-        String blobId = rndId();
+    private String getBlobLocation(String shortId) {
+        try {
+            URI blobUri;
 
-        blobs.put(shortId, blobId);
+            blobUri = BlobsClientFactory.getUri();
+            String blobId = rndId();
 
-        String blobLocation = String.format(SHORT_LOCATION_FORMAT, blobUri, blobId);
+            blobs.put(shortId, blobId);
 
-        return blobLocation;
+            String blobLocation = String.format(SHORT_LOCATION_FORMAT, blobUri, blobId);
+            return blobLocation;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
     // TODO: meter isto no utils

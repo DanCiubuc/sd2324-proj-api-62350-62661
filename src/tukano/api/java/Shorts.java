@@ -30,9 +30,8 @@ public interface Shorts {
 	 *         NOT FOUND, if the owner of the short does not exist;
 	 *         FORBIDDEN, if the password is not correct;
 	 *         BAD_REQUEST, otherwise.
-	 * @throws InterruptedException
 	 */
-	Result<Short> createShort(String userId, String password) throws InterruptedException;
+	Result<Short> createShort(String userId, String password);
 
 	/**
 	 * Deletes a given Short.
