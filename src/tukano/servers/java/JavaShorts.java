@@ -25,8 +25,6 @@ import tukano.persistence.Hibernate;
 public class JavaShorts implements Shorts {
     private final Map<String, Short> shorts = new HashMap<>();
 
-    private final Map<String, List<Short>> userShorts = new HashMap<>();
-    private final Map<String, List<String>> userFollowers = new HashMap<>();
     private final Map<String, List<String>> shortLikes = new HashMap<>();
     private final Map<String, String> blobs = new HashMap<>();
 
@@ -144,7 +142,7 @@ public class JavaShorts implements Shorts {
         }
 
         if (isFollowing) {
-            List<Follow> list_follow = getFollower(userId2);
+            List<Follow> list_follow = getFollower(userId1, userId2);
             if(!list_follow.isEmpty()) {
                 Log.info("Already Following User.");
                 return Result.error(ErrorCode.CONFLICT);
@@ -152,7 +150,7 @@ public class JavaShorts implements Shorts {
             Follow follow = new Follow(userId2, userId1);
             Hibernate.getInstance().persist(follow);
         } else {
-            List<Follow> list_follow = getFollower(userId2);
+            List<Follow> list_follow = getFollower(userId1, userId2);
             if(list_follow.isEmpty()) {
                 Log.info("Not Following User.");
                 return Result.error(ErrorCode.CONFLICT);
@@ -180,6 +178,29 @@ public class JavaShorts implements Shorts {
         List<String> result = getFollowers(userId);
 
         return Result.ok(result);
+    }
+
+    @Override
+    public Result<List<String>> getFeed(String userId, String password) {
+        Users users = UsersClientFactory.getClient();
+
+        if (users.getUser(userId, password).error().equals(ErrorCode.NOT_FOUND)) {
+            Log.info("User doesn't exist.");
+            return Result.error(ErrorCode.NOT_FOUND);
+        }
+
+        if (users.getUser(userId, password).error().equals(ErrorCode.FORBIDDEN)) {
+            Log.info("Incorrect password.");
+            return Result.error(ErrorCode.FORBIDDEN);
+        }
+
+        List<String> shortsInFeed = new ArrayList<String>();
+        List<Short> shorts = getShortFromUser(userId);
+        for (Short el : shorts) {
+            shortsInFeed.add(el.getShortId());
+        }
+
+        return Result.ok(shortsInFeed);
     }
 
     @Override
@@ -249,41 +270,6 @@ public class JavaShorts implements Shorts {
     }
 
     @Override
-    public Result<List<String>> getFeed(String userId, String password) {
-        Users users = UsersClientFactory.getClient();
-
-        if (users.getUser(userId, password).error().equals(ErrorCode.NOT_FOUND)) {
-            Log.info("User doesn't exist.");
-            return Result.error(ErrorCode.NOT_FOUND);
-        }
-
-        if (users.getUser(userId, password).error().equals(ErrorCode.FORBIDDEN)) {
-            Log.info("Incorrect password.");
-            return Result.error(ErrorCode.FORBIDDEN);
-        }
-
-        List<String> followingUsers = new ArrayList<String>();
-        List<String> shortsInFeed = new ArrayList<String>();
-
-        for (Map.Entry<String, List<String>> entry : userFollowers.entrySet()) {
-            if (entry.getValue().contains(userId))
-                followingUsers.add(entry.getKey());
-        }
-
-        for (Map.Entry<String, List<Short>> entry : userShorts.entrySet()) {
-            if (followingUsers.contains(entry.getKey())) {
-                for (Short el : entry.getValue()) {
-                    shortsInFeed.add(el.getShortId());
-                }
-            }
-
-        }
-
-        return Result.ok(shortsInFeed);
-
-    }
-
-    @Override
     public Result<Void> verifyBlobId(String blobId) {
         if (!blobs.containsValue(blobId)) {
             return Result.error(ErrorCode.NOT_FOUND);
@@ -314,8 +300,8 @@ public class JavaShorts implements Shorts {
         return Hibernate.getInstance().sql(String.format("SELECT * FROM Short s WHERE s.shortId LIKE '%%%s%%'", shortId), Short.class);
     }
 
-    private List<Follow> getFollower(String follower) {
-        return Hibernate.getInstance().sql(String.format("SELECT * FROM Follow f WHERE f.following LIKE '%%%s%%'", follower), Follow.class);
+    private List<Follow> getFollower(String userId1, String userId2) {
+        return Hibernate.getInstance().sql(String.format("SELECT * FROM Follow WHERE following LIKE '" + userId2 + "' AND followedBy LIKE '" + userId1 + "'"), Follow.class);
     }
 
     private List<String> getFollowers(String follower) {
@@ -328,4 +314,9 @@ public class JavaShorts implements Shorts {
         return fol_list;
     }
 
+    private List<Short> getShortFromUser(String follower) {
+        return Hibernate.getInstance().sql(String.format("SELECT s.* FROM Short s LEFT JOIN Follow f ON f.following = s.ownerId WHERE f.followedBy LIKE '%%%s%%' " +
+                                                         "UNION " +
+                                                         "SELECT m.* FROM Short m WHERE m.ownerId LIKE '" + follower + "' ORDER BY s.timestamp DESC", follower), Short.class);
+    }
 }
