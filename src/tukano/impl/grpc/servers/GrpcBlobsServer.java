@@ -2,15 +2,16 @@ package tukano.impl.grpc.servers;
 
 import io.grpc.ServerBuilder;
 import tukano.api.java.Blobs;
+import utils.Discovery;
 
 import java.net.InetAddress;
 import java.util.logging.Logger;
 
 public class GrpcBlobsServer {
 
-    public static final int PORT = 9000;
-    private static final String GRPC_CTX = "/gprc";
-    private static final String SERVER_BASE_URI = "grpc://%s:%s%s";
+    public static final int PORT = 15678;
+    private static final String SERVICE = "blobs";
+    private static final String SERVER_URI_FMT = "http://%s:%s/grpc";
 
     private static Logger Log = Logger.getLogger(GrpcBlobsServer.class.getName());
 
@@ -18,9 +19,14 @@ public class GrpcBlobsServer {
 
         var stub = new GrpcUsersServerStub();
         var server = ServerBuilder.forPort(PORT).addService(stub).build();
-        var serverURI = String.format(SERVER_BASE_URI, InetAddress.getLocalHost().getHostAddress(), PORT, GRPC_CTX);
 
-        Log.info(String.format("%s gRPC Server ready @ %s\n", Blobs.NAME, serverURI));
+        String ip = InetAddress.getLocalHost().getHostAddress();
+        var serverURI = String.format(SERVER_URI_FMT, ip, PORT);
+
+        Discovery disc = Discovery.getInstance();
+        disc.announce(SERVICE, serverURI);
+
+        Log.info(String.format("%s gRPC Server ready @ %s\n", SERVICE, serverURI));
         server.start().awaitTermination();
     }
 }

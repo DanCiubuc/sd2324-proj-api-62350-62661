@@ -80,9 +80,10 @@ public class JavaShorts implements Shorts {
             Log.info("User doesn't exist.");
             return Result.error(ErrorCode.NOT_FOUND);
         }
-        List<Short> shorts = Hibernate.getInstance().sql(String.format("SELECT * FROM Short s WHERE s.ownerId LIKE '%%%s%%'", userId), Short.class);
+        List<Short> shorts = Hibernate.getInstance()
+                .sql(String.format("SELECT * FROM Short s WHERE s.ownerId LIKE '%%%s%%'", userId), Short.class);
         List<String> result = new ArrayList<String>();
-        for(Short s : shorts) {
+        for (Short s : shorts) {
             result.add(s.getShortId());
         }
         return Result.ok(result);
@@ -115,7 +116,7 @@ public class JavaShorts implements Shorts {
 
         // TODO: add removeShort to Blobs, so any videos associated with this Short gets
         // deleted from the blobs server
-        //blobs.remove(shortId);
+        // blobs.remove(shortId);
 
         return Result.ok();
     }
@@ -126,7 +127,7 @@ public class JavaShorts implements Shorts {
 
         ErrorCode error1 = users.searchUsers(userId1).error();
         ErrorCode error2 = users.searchUsers(userId2).error();
-        if(error1.equals(ErrorCode.BAD_REQUEST) || error2.equals(ErrorCode.BAD_REQUEST)) {
+        if (error1.equals(ErrorCode.BAD_REQUEST) || error2.equals(ErrorCode.BAD_REQUEST)) {
             Log.info("One of the users doesn't exist.");
             return Result.error(ErrorCode.NOT_FOUND);
         }
@@ -137,19 +138,18 @@ public class JavaShorts implements Shorts {
         }
         List<Follow> list_follow = getFollower(userId1, userId2);
         if (isFollowing) {
-            if(!list_follow.isEmpty()) {
+            if (!list_follow.isEmpty()) {
                 Log.info("Already Following User.");
                 return Result.error(ErrorCode.CONFLICT);
             }
             Follow follow = new Follow(userId2, userId1);
             Hibernate.getInstance().persist(follow);
         } else {
-            if(list_follow.isEmpty()) {
-                Log.info("Not Following User.");
-                return Result.error(ErrorCode.CONFLICT);
+            if (!list_follow.isEmpty()) {
+                Follow f = list_follow.get(0);
+                Hibernate.getInstance().delete(f);
             }
-            Follow f = list_follow.get(0);
-            Hibernate.getInstance().delete(f);
+
         }
         return Result.ok();
     }
@@ -300,36 +300,48 @@ public class JavaShorts implements Shorts {
     }
 
     private List<Short> getShortHibernate(String shortId) {
-        return Hibernate.getInstance().sql(String.format("SELECT * FROM Short s WHERE s.shortId LIKE '%%%s%%'", shortId), Short.class);
+        return Hibernate.getInstance()
+                .sql(String.format("SELECT * FROM Short s WHERE s.shortId LIKE '%%%s%%'", shortId), Short.class);
     }
 
     private List<Short> getShortFromUser(String follower) {
-        return Hibernate.getInstance().sql(String.format("SELECT s.* FROM Short s LEFT JOIN Follow f ON f.following = s.ownerId WHERE f.followedBy LIKE '%%%s%%' " +
-                "UNION " +
-                "SELECT m.* FROM Short m WHERE m.ownerId LIKE '" + follower + "' ORDER BY s.timestamp DESC", follower), Short.class);
+        return Hibernate.getInstance().sql(String.format(
+                "SELECT s.* FROM Short s LEFT JOIN Follow f ON f.following = s.ownerId WHERE f.followedBy LIKE '%%%s%%' "
+                        +
+                        "UNION " +
+                        "SELECT m.* FROM Short m WHERE m.ownerId LIKE '" + follower + "' ORDER BY s.timestamp DESC",
+                follower), Short.class);
     }
 
     private List<Follow> getFollower(String userId1, String userId2) {
-        return Hibernate.getInstance().sql(String.format("SELECT * FROM Follow WHERE following LIKE '" + userId2 + "' AND followedBy LIKE '" + userId1 + "'"), Follow.class);
+        return Hibernate.getInstance().sql(String.format(
+                "SELECT * FROM Follow WHERE following LIKE '" + userId2 + "' AND followedBy LIKE '" + userId1 + "'"),
+                Follow.class);
     }
 
     private List<String> getFollowers(String follower) {
         List<String> fol_list = new ArrayList<>();
-        List<Follow> followers =  Hibernate.getInstance().sql(String.format("SELECT * FROM Follow f WHERE f.following LIKE '%%%s%%'", follower), Follow.class);
-        for(Follow f : followers) {
-           String follower_id = f.getFollowedBy();
+        List<Follow> followers = Hibernate.getInstance()
+                .sql(String.format("SELECT * FROM Follow f WHERE f.following LIKE '%%%s%%'", follower), Follow.class);
+        for (Follow f : followers) {
+            String follower_id = f.getFollowedBy();
             fol_list.add(follower_id);
         }
         return fol_list;
     }
 
     private List<Likes> getLikes(String shortId, String userId) {
-        return Hibernate.getInstance().sql(String.format("SELECT * FROM Likes WHERE shortId LIKE '" + shortId + "' AND userId LIKE '" + userId + "'"), Likes.class);
+        return Hibernate.getInstance()
+                .sql(String.format(
+                        "SELECT * FROM Likes WHERE shortId LIKE '" + shortId + "' AND userId LIKE '" + userId + "'"),
+                        Likes.class);
     }
+
     private List<String> getLikesFromShort(String shortId) {
         List<String> likes = new ArrayList<>();
-        List<Likes> list = Hibernate.getInstance().sql(String.format("SELECT * FROM Likes l WHERE l.shortId LIKE '%%%s%%'", shortId), Likes.class);
-        for(Likes l : list) {
+        List<Likes> list = Hibernate.getInstance()
+                .sql(String.format("SELECT * FROM Likes l WHERE l.shortId LIKE '%%%s%%'", shortId), Likes.class);
+        for (Likes l : list) {
             likes.add(l.getUserId());
         }
         return likes;
