@@ -15,18 +15,18 @@ public class RestBlobsServer {
         System.setProperty("java.net.preferIPv4Stack", "true");
     }
 
-    public static final int PORT = 8080;
+    public static final int PORT = 5678;
     public static final String SERVICE = "blobs";
-    private static final String SERVER_URI_FMT = "http://%s:%s/rest";
+    private static final String SERVER_URI_FMT = "http://%s%s:%s/rest";
 
     public static void main(String[] args) {
         try {
-            // TODO: utilize arg[0]
+
             ResourceConfig config = new ResourceConfig();
             config.register(RestBlobsResource.class);
 
-            String ip = InetAddress.getLocalHost().getHostAddress();
-            String serverURI = String.format(SERVER_URI_FMT, ip, PORT);
+            String serverURI = String.format(SERVER_URI_FMT, SERVICE, args[0].strip(), PORT);
+            Log.info(serverURI);
             JdkHttpServerFactory.createHttpServer(URI.create(serverURI), config);
 
             Discovery disc = Discovery.getInstance();

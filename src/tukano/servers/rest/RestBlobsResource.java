@@ -16,12 +16,15 @@ public class RestBlobsResource implements RestBlobs {
     public RestBlobsResource() {
         this.impl = new JavaBlobs();
     }
+
     @Override
-    public void upload(String blobId, byte[] bytes) { impl.upload( blobId, bytes); }
+    public void upload(String blobId, byte[] bytes) {
+        resultOrThrow(impl.upload(blobId, bytes));
+    }
 
     @Override
     public byte[] download(String blobId) {
-        return resultOrThrow( impl.download( blobId ));
+        return resultOrThrow(impl.download(blobId));
     }
 
     /**
