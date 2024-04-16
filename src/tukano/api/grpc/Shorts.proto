@@ -23,6 +23,8 @@ service Shorts {
 	rpc likes( LikesArgs ) returns (LikesResult);
 
 	rpc getFeed( GetFeedArgs) returns (GetFeedResult);
+
+	rpc verifyBlobId ( VerifyBlobIdArgs ) returns (VerifyBlobIdResult);
 }
 
 message GrpcShort {
@@ -111,4 +113,11 @@ message GetFeedArgs {
 
 message GetFeedResult {
 	repeated string shortId = 1;
+}
+
+message VerifyBlobIdArgs {
+	string blobId = 1;
+}
+
+message VerifyBlobIdResult {
 }

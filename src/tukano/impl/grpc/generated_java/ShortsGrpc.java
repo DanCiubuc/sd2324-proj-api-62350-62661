@@ -294,6 +294,37 @@ public final class ShortsGrpc {
     return getGetFeedMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdArgs,
+      tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdResult> getVerifyBlobIdMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "verifyBlobId",
+      requestType = tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdArgs.class,
+      responseType = tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdResult.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdArgs,
+      tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdResult> getVerifyBlobIdMethod() {
+    io.grpc.MethodDescriptor<tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdArgs, tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdResult> getVerifyBlobIdMethod;
+    if ((getVerifyBlobIdMethod = ShortsGrpc.getVerifyBlobIdMethod) == null) {
+      synchronized (ShortsGrpc.class) {
+        if ((getVerifyBlobIdMethod = ShortsGrpc.getVerifyBlobIdMethod) == null) {
+          ShortsGrpc.getVerifyBlobIdMethod = getVerifyBlobIdMethod =
+              io.grpc.MethodDescriptor.<tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdArgs, tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdResult>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "verifyBlobId"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdArgs.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdResult.getDefaultInstance()))
+              .setSchemaDescriptor(new ShortsMethodDescriptorSupplier("verifyBlobId"))
+              .build();
+        }
+      }
+    }
+    return getVerifyBlobIdMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -404,6 +435,13 @@ public final class ShortsGrpc {
         io.grpc.stub.StreamObserver<tukano.impl.grpc.generated_java.ShortsProtoBuf.GetFeedResult> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getGetFeedMethod(), responseObserver);
     }
+
+    /**
+     */
+    default void verifyBlobId(tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdArgs request,
+        io.grpc.stub.StreamObserver<tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdResult> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getVerifyBlobIdMethod(), responseObserver);
+    }
   }
 
   /**
@@ -504,6 +542,14 @@ public final class ShortsGrpc {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getGetFeedMethod(), getCallOptions()), request, responseObserver);
     }
+
+    /**
+     */
+    public void verifyBlobId(tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdArgs request,
+        io.grpc.stub.StreamObserver<tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdResult> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getVerifyBlobIdMethod(), getCallOptions()), request, responseObserver);
+    }
   }
 
   /**
@@ -583,6 +629,13 @@ public final class ShortsGrpc {
     public tukano.impl.grpc.generated_java.ShortsProtoBuf.GetFeedResult getFeed(tukano.impl.grpc.generated_java.ShortsProtoBuf.GetFeedArgs request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getGetFeedMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdResult verifyBlobId(tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdArgs request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getVerifyBlobIdMethod(), getCallOptions(), request);
     }
   }
 
@@ -673,6 +726,14 @@ public final class ShortsGrpc {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getGetFeedMethod(), getCallOptions()), request);
     }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdResult> verifyBlobId(
+        tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdArgs request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getVerifyBlobIdMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_CREATE_SHORT = 0;
@@ -684,6 +745,7 @@ public final class ShortsGrpc {
   private static final int METHODID_LIKE = 6;
   private static final int METHODID_LIKES = 7;
   private static final int METHODID_GET_FEED = 8;
+  private static final int METHODID_VERIFY_BLOB_ID = 9;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -737,6 +799,10 @@ public final class ShortsGrpc {
         case METHODID_GET_FEED:
           serviceImpl.getFeed((tukano.impl.grpc.generated_java.ShortsProtoBuf.GetFeedArgs) request,
               (io.grpc.stub.StreamObserver<tukano.impl.grpc.generated_java.ShortsProtoBuf.GetFeedResult>) responseObserver);
+          break;
+        case METHODID_VERIFY_BLOB_ID:
+          serviceImpl.verifyBlobId((tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdArgs) request,
+              (io.grpc.stub.StreamObserver<tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdResult>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -819,6 +885,13 @@ public final class ShortsGrpc {
               tukano.impl.grpc.generated_java.ShortsProtoBuf.GetFeedArgs,
               tukano.impl.grpc.generated_java.ShortsProtoBuf.GetFeedResult>(
                 service, METHODID_GET_FEED)))
+        .addMethod(
+          getVerifyBlobIdMethod(),
+          io.grpc.stub.ServerCalls.asyncUnaryCall(
+            new MethodHandlers<
+              tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdArgs,
+              tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdResult>(
+                service, METHODID_VERIFY_BLOB_ID)))
         .build();
   }
 
@@ -876,6 +949,7 @@ public final class ShortsGrpc {
               .addMethod(getLikeMethod())
               .addMethod(getLikesMethod())
               .addMethod(getGetFeedMethod())
+              .addMethod(getVerifyBlobIdMethod())
               .build();
         }
       }

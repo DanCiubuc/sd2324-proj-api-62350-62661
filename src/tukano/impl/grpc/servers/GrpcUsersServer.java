@@ -4,23 +4,29 @@ import java.net.InetAddress;
 import java.util.logging.Logger;
 
 import io.grpc.ServerBuilder;
-import tukano.api.java.Users;
+import utils.Discovery;
 
 public class GrpcUsersServer {
-public static final int PORT = 9000;
+	public static final int PORT = 13456;
 
-	private static final String GRPC_CTX = "/gprc";
-	private static final String SERVER_BASE_URI = "grpc://%s:%s%s";
-	
+	private static final String SERVICE = "users";
+	private static final String SERVER_URI_FMT = "http://%s:%s/grpc";
+
 	private static Logger Log = Logger.getLogger(GrpcUsersServer.class.getName());
-	
+
 	public static void main(String[] args) throws Exception {
-		
+
 		var stub = new GrpcUsersServerStub();
 		var server = ServerBuilder.forPort(PORT).addService(stub).build();
-		var serverURI = String.format(SERVER_BASE_URI, InetAddress.getLocalHost().getHostAddress(), PORT, GRPC_CTX);
 
-		Log.info(String.format("%s gRPC Server ready @ %s\n", Users.NAME, serverURI));
+		String ip = InetAddress.getLocalHost().getHostAddress();
+		String serverURI = String.format(SERVER_URI_FMT, ip, PORT);
+
+		Discovery disc = Discovery.getInstance();
+
+		disc.announce(SERVICE, serverURI);
+
+		Log.info(String.format("%s gRPC Server ready @ %s\n", SERVICE, serverURI));
 		server.start().awaitTermination();
 	}
 }
