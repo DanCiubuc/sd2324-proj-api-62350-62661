@@ -21,7 +21,6 @@ public interface Blobs {
 	 *         existing blob
 	 *         CONFLICT if a blobId exists but bytes do not match
 	 *         FORBIDDEN if the blobId is not valid
-	 * @throws InterruptedException
 	 */
 	Result<Void> upload(String blobId, byte[] bytes);
 
@@ -35,7 +34,7 @@ public interface Blobs {
 	Result<byte[]> download(String blobId);
 
 	/**
-	 * Downloads a short video blob resource
+	 * Removes the blob with the given identifier
 	 * 
 	 * @param blobId the id of the blob
 	 * @return (OK, bytes), if the blob was removed

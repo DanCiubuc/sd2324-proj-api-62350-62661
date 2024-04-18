@@ -335,6 +335,10 @@ public class JavaShorts implements Shorts {
     }
 
     // TODO: meter isto no utils
+    /**
+     * 
+     * @return a random uuid with lenght 16
+     */
     private String rndId() {
         String uuid = String.format("%040d", new BigInteger(UUID.randomUUID().toString().replace("-", ""), 16));
         String uuid16digits = uuid.substring(uuid.length() - 16);
@@ -342,11 +346,21 @@ public class JavaShorts implements Shorts {
         return uuid16digits;
     }
 
+    /**
+     * 
+     * @param shortId
+     * @return List of the Short instances that matches the given shortId
+     */
     private List<Short> getShortHibernate(String shortId) {
         return Hibernate.getInstance()
                 .sql(String.format("SELECT * FROM Short s WHERE s.shortId LIKE '%%%s%%'", shortId), Short.class);
     }
 
+    /**
+     * 
+     * @param follower
+     * @return List of the Shorts from the Users that User follower follows
+     */
     private List<Short> getShortFromUser(String follower) {
         return Hibernate.getInstance().sql(String.format(
                 "SELECT s.* FROM Short s LEFT JOIN Follow f ON f.following = s.ownerId WHERE f.followedBy LIKE '%%%s%%' "
@@ -356,12 +370,24 @@ public class JavaShorts implements Shorts {
                 follower), Short.class);
     }
 
+    /**
+     * 
+     * @param userId1 - user that is followed
+     * @param userId2 - user that is following
+     * @return List of instances of Follow object that stores the following relation
+     *         between user1 and user2
+     */
     private List<Follow> getFollower(String userId1, String userId2) {
         return Hibernate.getInstance().sql(String.format(
                 "SELECT * FROM Follow WHERE following LIKE '" + userId2 + "' AND followedBy LIKE '" + userId1 + "'"),
                 Follow.class);
     }
 
+    /**
+     * 
+     * @param follower
+     * @return List of userIds of the users that the given user (follower) follows
+     */
     private List<String> getFollowers(String follower) {
         List<String> fol_list = new ArrayList<>();
         List<Follow> followers = Hibernate.getInstance()

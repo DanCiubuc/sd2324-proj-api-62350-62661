@@ -115,11 +115,11 @@ public interface Shorts {
 	Result<List<String>> likes(String shortId, String password);
 
 	/**
-	 * Returns all the indentifier of the shorts that the user liked
+	 * Returns all the indentifiers of the shorts that the user liked
 	 * 
 	 * @param shortId  the identifier of the user
 	 * @param password the password of the user
-	 * @return (OK,Boolean),
+	 * @return (OK,List<String>|empty list),
 	 *         NOT_FOUND if there is no User with the given userId
 	 *         FORBIDDEN if the password is incorrect
 	 */

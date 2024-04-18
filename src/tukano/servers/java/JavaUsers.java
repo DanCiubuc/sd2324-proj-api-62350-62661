@@ -70,13 +70,15 @@ public class JavaUsers implements Users {
     public Result<User> updateUser(String userId, String pwd, User user) {
         Log.info("Info Received updateUser : userId = " + userId + "; pwd = " + pwd + "; email = " + user.getEmail()
                 + "; displayName = " + user.getDisplayName());
+
         // Check if user is valid
         if (userId == null) {
             Log.info("UserId may not be null.");
             return Result.error(ErrorCode.BAD_REQUEST);
         }
 
-        // // The id of the User can't be changed
+        // With this code block we pass test 2 but fail test 8a
+        // The id of the User can't be changed
         // if (user.getUserId() != null) {
         // Log.info("Can't change userId.");
         // return Result.error(ErrorCode.BAD_REQUEST);
