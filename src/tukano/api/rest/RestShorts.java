@@ -27,6 +27,8 @@ public interface RestShorts {
 	String FEED = "/feed";
 
 	String LIKES = "/likes";
+	String LIKES_HISTORY = "/likes_history";
+
 	String SHORTS = "/shorts";
 	String FOLLOWERS = "/followers";
 
@@ -73,6 +75,11 @@ public interface RestShorts {
 	@Path("/{" + SHORT_ID + "}" + LIKES)
 	@Produces(MediaType.APPLICATION_JSON)
 	List<String> likes(@PathParam(SHORT_ID) String shortId, @QueryParam(PWD) String password);
+
+	@GET
+	@Path("/{" + USER_ID + "}" + LIKES_HISTORY)
+	@Produces(MediaType.APPLICATION_JSON)
+	List<String> likeHistory(@PathParam(USER_ID) String userId, @QueryParam(PWD) String password);
 
 	@GET
 	@Path("/{" + USER_ID + "}" + FEED)

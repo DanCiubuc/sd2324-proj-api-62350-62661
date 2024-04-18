@@ -115,6 +115,17 @@ public interface Shorts {
 	Result<List<String>> likes(String shortId, String password);
 
 	/**
+	 * Returns all the indentifier of the shorts that the user liked
+	 * 
+	 * @param shortId  the identifier of the user
+	 * @param password the password of the user
+	 * @return (OK,Boolean),
+	 *         NOT_FOUND if there is no User with the given userId
+	 *         FORBIDDEN if the password is incorrect
+	 */
+	Result<List<String>> likeHistory(String userId, String password);
+
+	/**
 	 * Returns the feed of the user, sorted by age. The feed is the list of shorts
 	 * made by
 	 * the users followed by the user.

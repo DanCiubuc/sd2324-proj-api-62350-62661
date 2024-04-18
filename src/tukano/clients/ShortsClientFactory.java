@@ -11,7 +11,7 @@ public class ShortsClientFactory {
 
     private static URI shortsUris;
 
-    public static Shorts getClient() throws InterruptedException {
+    public static Shorts getClient() {
         if (shortsUris == null) {
             shortsUris = getShortsUris();
         }
@@ -21,7 +21,7 @@ public class ShortsClientFactory {
             return new GrpcShortsClient(shortsUris);
     }
 
-    public static URI getShortsUris() throws InterruptedException {
+    public static URI getShortsUris() {
         try {
             Discovery disc = Discovery.getInstance();
             shortsUris = disc.knownUrisOf("shorts", 1).get(0);

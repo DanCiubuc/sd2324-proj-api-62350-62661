@@ -27,6 +27,11 @@ public class RestBlobsResource implements RestBlobs {
         return resultOrThrow(impl.download(blobId));
     }
 
+    @Override
+    public void remove(String blobId) {
+        resultOrThrow(impl.remove(blobId));
+    }
+
     /**
      * Given a Result<T>, either returns the value, or throws the JAX-WS Exception
      * matching the error code...

@@ -12,6 +12,7 @@ import tukano.api.Follow;
 import tukano.api.Likes;
 import tukano.api.Short;
 import tukano.api.User;
+import tukano.api.java.Blobs;
 import tukano.api.java.Result;
 import tukano.api.java.Shorts;
 import tukano.api.java.Result.ErrorCode;
@@ -24,6 +25,9 @@ public class JavaShorts implements Shorts {
     private final Map<String, String> blobs = new HashMap<>();
 
     private static final String SHORT_LOCATION_FORMAT = "%s/blobs/%s";
+    private static final String DELIMITER = "\t";
+    private static final int BLOB_ADDRESS_IDX = 0;
+    private static final int BLOB_ID_IDX = 2;
 
     private static Logger Log = Logger.getLogger(JavaShorts.class.getName());
 
@@ -68,6 +72,7 @@ public class JavaShorts implements Shorts {
             return Result.error(ErrorCode.NOT_FOUND);
         }
         Short shortObj = shorts_list.get(0);
+        Log.info(shortObj.toString());
         return Result.ok(shortObj);
     }
 
@@ -111,12 +116,21 @@ public class JavaShorts implements Shorts {
             return Result.error(ErrorCode.FORBIDDEN);
         }
 
+        String blobUrl = shortObj.getBlobUrl();
+        int lastSlashIndex = blobUrl.lastIndexOf("/", blobUrl.lastIndexOf("blobs/") - 1);
+        String blobsAddress = blobUrl.substring(0, lastSlashIndex);
+        String blobId = blobUrl.substring(blobUrl.lastIndexOf("/") + 1);
+
+        Log.info(blobsAddress);
+        Log.info(blobId);
+
+        // Communicate with Blob Service that stores this shorts video
+        Blobs blobsService = BlobsClientFactory.getClient(blobsAddress);
+
+        blobsService.remove(blobId);
+
         // Start removing
         Hibernate.getInstance().delete(shortObj);
-
-        // TODO: add removeShort to Blobs, so any videos associated with this Short gets
-        // deleted from the blobs server
-        // blobs.remove(shortId);
 
         return Result.ok();
     }
@@ -234,12 +248,16 @@ public class JavaShorts implements Shorts {
                 Log.info("User didn't have like in this post.");
                 return Result.error(ErrorCode.BAD_REQUEST);
             }
+
             Likes l = like_list.get(0);
             Short shor = shorts_list.get(0);
+            Log.info("Before removing like" + shor.toString());
+
             int likes = shor.getTotalLikes();
             shor.setTotalLikes(likes - 1);
             Hibernate.getInstance().update(shor);
             Hibernate.getInstance().delete(l);
+            Log.info("After removing like" + shor.toString());
         }
         return Result.ok();
     }
@@ -263,6 +281,31 @@ public class JavaShorts implements Shorts {
         List<String> result = getLikesFromShort(shortId);
 
         return Result.ok(result);
+    }
+
+    public Result<List<String>> likeHistory(String userId, String password) {
+        Users users = UsersClientFactory.getClient();
+
+        if (users.getUser(userId, password).error().equals(ErrorCode.NOT_FOUND)) {
+            Log.info("User does not exist.");
+            return Result.error(ErrorCode.NOT_FOUND);
+        }
+
+        if (users.getUser(userId, password).error().equals(ErrorCode.FORBIDDEN)) {
+            Log.info("Incorect Password.");
+            return Result.error(ErrorCode.FORBIDDEN);
+        }
+
+        List<Likes> liked = getLikedHistory(userId);
+        List<String> likedShorts = new ArrayList<>();
+
+        for (Likes likes : liked) {
+            likedShorts.add(likes.getShortId());
+        }
+
+        Log.info(likedShorts.toString());
+
+        return Result.ok(likedShorts);
     }
 
     @Override
@@ -345,6 +388,13 @@ public class JavaShorts implements Shorts {
             likes.add(l.getUserId());
         }
         return likes;
+    }
+
+    private List<Likes> getLikedHistory(String userId) {
+        return Hibernate.getInstance()
+                .sql(String.format(
+                        "SELECT * FROM Likes WHERE userId LIKE '" + userId + "'"),
+                        Likes.class);
     }
 
 }

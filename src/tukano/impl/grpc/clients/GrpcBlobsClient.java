@@ -8,6 +8,7 @@ import tukano.api.java.Blobs;
 import tukano.api.java.Result;
 import tukano.impl.grpc.generated_java.BlobsGrpc;
 import tukano.impl.grpc.generated_java.BlobsProtoBuf;
+import tukano.impl.grpc.generated_java.BlobsProtoBuf.RemoveArgs;
 
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
@@ -23,15 +24,16 @@ public class GrpcBlobsClient implements Blobs {
 
     public GrpcBlobsClient(URI serverURI) {
         var channel = ManagedChannelBuilder.forAddress(serverURI.getHost(), serverURI.getPort()).usePlaintext().build();
-        stub = BlobsGrpc.newBlockingStub( channel ).withDeadlineAfter(GRPC_REQUEST_TIMEOUT, TimeUnit.MILLISECONDS);
+        stub = BlobsGrpc.newBlockingStub(channel).withDeadlineAfter(GRPC_REQUEST_TIMEOUT, TimeUnit.MILLISECONDS);
     }
+
     @Override
     public Result<Void> upload(String blobId, byte[] bytes) {
         return toJavaResult(() -> {
             stub.upload(BlobsProtoBuf.UploadArgs.newBuilder()
-                .setBlobId(blobId)
-                .setData(ByteString.copyFrom(bytes))
-                .build());
+                    .setBlobId(blobId)
+                    .setData(ByteString.copyFrom(bytes))
+                    .build());
             return null;
         });
     }
@@ -47,19 +49,29 @@ public class GrpcBlobsClient implements Blobs {
         });
     }
 
+    @Override
+    public Result<Void> remove(String blobId) {
+        return toJavaResult(() -> {
+            stub.remove(RemoveArgs.newBuilder()
+                    .setBlobId(blobId)
+                    .build());
+            return null;
+        });
+    }
+
     static <T> Result<T> toJavaResult(Supplier<T> func) {
         try {
             return ok(func.get());
-        } catch(StatusRuntimeException sre) {
+        } catch (StatusRuntimeException sre) {
             var code = sre.getStatus().getCode();
-            if( code == Status.Code.UNAVAILABLE || code == Status.Code.DEADLINE_EXCEEDED )
+            if (code == Status.Code.UNAVAILABLE || code == Status.Code.DEADLINE_EXCEEDED)
                 throw sre;
-            return error( statusToErrorCode( sre.getStatus() ) );
+            return error(statusToErrorCode(sre.getStatus()));
         }
     }
 
-    static Result.ErrorCode statusToErrorCode(Status status ) {
-        return switch( status.getCode() ) {
+    static Result.ErrorCode statusToErrorCode(Status status) {
+        return switch (status.getCode()) {
             case OK -> Result.ErrorCode.OK;
             case NOT_FOUND -> Result.ErrorCode.NOT_FOUND;
             case ALREADY_EXISTS -> Result.ErrorCode.CONFLICT;
@@ -69,4 +81,5 @@ public class GrpcBlobsClient implements Blobs {
             default -> Result.ErrorCode.INTERNAL_ERROR;
         };
     }
+
 }

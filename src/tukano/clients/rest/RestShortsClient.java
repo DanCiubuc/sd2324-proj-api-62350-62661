@@ -66,6 +66,11 @@ public class RestShortsClient extends RestClient implements Shorts {
     }
 
     @Override
+    public Result<List<String>> likeHistory(String userId, String password) {
+        return super.reTry(() -> clt_likeHistory(userId, password));
+    }
+
+    @Override
     public Result<Void> verifyBlobId(String blobId) {
         return super.reTry(() -> clt_verifyBlobId(blobId));
     }
@@ -111,7 +116,7 @@ public class RestShortsClient extends RestClient implements Shorts {
 
     private Result<Void> clt_verifyBlobId(String blobId) {
         return super.toJavaResult(
-                target.path(blobId + "/verify")
+                target.path(blobId + RestShorts.VERIFY)
                         .request()
                         .accept(MediaType.APPLICATION_JSON)
                         .post(Entity.entity("", MediaType.APPLICATION_JSON)),
@@ -167,4 +172,15 @@ public class RestShortsClient extends RestClient implements Shorts {
                         .get(),
                 String.class);
     }
+
+    private Result<List<String>> clt_likeHistory(String userId, String password) {
+        return super.toJavaResultForList(
+                target.path(userId + RestShorts.LIKES_HISTORY)
+                        .queryParam(RestShorts.PWD, password)
+                        .request()
+                        .accept(MediaType.APPLICATION_JSON)
+                        .get(),
+                String.class);
+    }
+
 }

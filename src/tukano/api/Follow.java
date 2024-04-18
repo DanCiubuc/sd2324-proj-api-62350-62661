@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 public class Follow {
     @Id
     String following;
+    @Id
     String followedBy;
 
     public Follow() {

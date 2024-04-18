@@ -27,6 +27,8 @@ import tukano.impl.grpc.generated_java.ShortsProtoBuf.GetShortsArgs;
 import tukano.impl.grpc.generated_java.ShortsProtoBuf.GetShortsResult;
 import tukano.impl.grpc.generated_java.ShortsProtoBuf.GrpcShort;
 import tukano.impl.grpc.generated_java.ShortsProtoBuf.LikeArgs;
+import tukano.impl.grpc.generated_java.ShortsProtoBuf.LikeHistoryArgs;
+import tukano.impl.grpc.generated_java.ShortsProtoBuf.LikeHistoryResult;
 import tukano.impl.grpc.generated_java.ShortsProtoBuf.LikeResult;
 import tukano.impl.grpc.generated_java.ShortsProtoBuf.LikesArgs;
 import tukano.impl.grpc.generated_java.ShortsProtoBuf.LikesResult;
@@ -171,6 +173,24 @@ public class GrpcShortsServerStub implements ShortsGrpc.AsyncService, BindableSe
                 cont++;
             }
             responseObserver.onNext(LikesResultBuilder.build());
+            responseObserver.onCompleted();
+        }
+    }
+
+    @Override
+    public void likeHistory(LikeHistoryArgs request, StreamObserver<LikeHistoryResult> responseObserver) {
+        var res = impl.likeHistory(request.getUserId(), request.getPassword());
+        if (!res.isOK())
+            responseObserver.onError(errorCodeToStatus(res.error()));
+        else {
+            List<String> list = res.value();
+            LikeHistoryResult.Builder LikeHistoryResultBuilder = LikeHistoryResult.newBuilder();
+            int cont = 0;
+            for (String shortId : list) {
+                LikeHistoryResultBuilder.setShortId(cont, shortId);
+                cont++;
+            }
+            responseObserver.onNext(LikeHistoryResultBuilder.build());
             responseObserver.onCompleted();
         }
     }

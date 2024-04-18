@@ -22,24 +22,25 @@ import static tukano.clients.rest.RestBlobsClient.getErrorCodeFrom;
 
 public class RestClient {
 
-    protected static final int READ_TIMEOUT = 5000;
-    protected static final int CONNECT_TIMEOUT = 5000;
+    protected static final int READ_TIMEOUT = 10000;
+    protected static final int CONNECT_TIMEOUT = 10000;
 
     final URI serverURI;
     final Client client;
     final ClientConfig config;
 
-    public RestClient( URI serverURI ) {
+    public RestClient(URI serverURI) {
         this.serverURI = serverURI;
 
         this.config = new ClientConfig();
 
-        config.property( ClientProperties.READ_TIMEOUT, READ_TIMEOUT);
-        config.property( ClientProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT);
+        config.property(ClientProperties.READ_TIMEOUT, READ_TIMEOUT);
+        config.property(ClientProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT);
 
         this.client = ClientBuilder.newClient(config);
     }
-    protected static final int MAX_RETRIES = 10;
+
+    protected static final int MAX_RETRIES = 3;
     protected static final int RETRY_SLEEP = 1000;
 
     protected <T> Result<T> reTry(Supplier<Result<T>> func) {
@@ -63,8 +64,10 @@ public class RestClient {
         try {
             var status = r.getStatusInfo().toEnum();
             if (status == Response.Status.OK && r.hasEntity())
-                return ok(r.readEntity(new GenericType<List<T>>() {}));
-            else if (status == Response.Status.NO_CONTENT) return ok();
+                return ok(r.readEntity(new GenericType<List<T>>() {
+                }));
+            else if (status == Response.Status.NO_CONTENT)
+                return ok();
 
             return error(getErrorCodeFrom(status.getStatusCode()));
         } finally {
@@ -77,7 +80,8 @@ public class RestClient {
             var status = r.getStatusInfo().toEnum();
             if (status == Response.Status.OK && r.hasEntity())
                 return ok(r.readEntity(entityType));
-            else if (status == Response.Status.NO_CONTENT) return ok();
+            else if (status == Response.Status.NO_CONTENT)
+                return ok();
 
             return error(getErrorCodeFrom(status.getStatusCode()));
         } finally {

@@ -35,6 +35,15 @@ public interface Blobs {
 	Result<byte[]> download(String blobId);
 
 	/**
+	 * Downloads a short video blob resource
+	 * 
+	 * @param blobId the id of the blob
+	 * @return (OK, bytes), if the blob was removed
+	 *         NOT_FOUND, if no blob matches the provided blobId
+	 */
+	Result<Void> remove(String blobId);
+
+	/**
 	 * Downloads a short video blob resource as a result suitable for streaming
 	 * large-sized byte resources
 	 *

@@ -18,8 +18,6 @@ public class RestShortsResouce implements RestShorts {
 
     final Shorts impl;
 
-    private static Logger Log = Logger.getLogger(RestShortsResouce.class.getName());
-
     public RestShortsResouce() {
         this.impl = new JavaShorts();
     }
@@ -68,6 +66,11 @@ public class RestShortsResouce implements RestShorts {
     @Override
     public List<String> getFeed(String userId, String password) {
         return resultOrThrow(impl.getFeed(userId, password));
+    }
+
+    @Override
+    public List<String> likeHistory(String userId, String password) {
+        return resultOrThrow(impl.likeHistory(userId, password));
     }
 
     @Override

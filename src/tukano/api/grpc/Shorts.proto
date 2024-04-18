@@ -24,6 +24,8 @@ service Shorts {
 
 	rpc getFeed( GetFeedArgs) returns (GetFeedResult);
 
+	rpc likeHistory ( LikeHistoryArgs ) returns (LikeHistoryResult);
+
 	rpc verifyBlobId ( VerifyBlobIdArgs ) returns (VerifyBlobIdResult);
 }
 
@@ -120,4 +122,13 @@ message VerifyBlobIdArgs {
 }
 
 message VerifyBlobIdResult {
+}
+
+message LikeHistoryArgs {
+	string userId = 1;
+	string password = 2;
+}
+
+message LikeHistoryResult {
+	repeated string shortId = 1;
 }

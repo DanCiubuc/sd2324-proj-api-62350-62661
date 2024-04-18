@@ -28,6 +28,7 @@ import tukano.impl.grpc.generated_java.ShortsProtoBuf.LikesArgs;
 import tukano.impl.grpc.generated_java.ShortsProtoBuf.GetShortArgs;
 import tukano.impl.grpc.generated_java.ShortsProtoBuf.GetShortsArgs;
 import tukano.impl.grpc.generated_java.ShortsProtoBuf.LikeArgs;
+import tukano.impl.grpc.generated_java.ShortsProtoBuf.LikeHistoryArgs;
 import tukano.impl.grpc.generated_java.ShortsProtoBuf.CreateShortArgs;
 import tukano.impl.grpc.generated_java.ShortsProtoBuf.VerifyBlobIdArgs;
 
@@ -153,6 +154,17 @@ public class GrpcShortsClient implements Shorts {
         });
     }
 
+    @Override
+    public Result<List<String>> likeHistory(String userId, String password) {
+        return toJavaResult(() -> {
+            var res = stub.likeHistory(LikeHistoryArgs.newBuilder()
+                    .setUserId(userId)
+                    .setPassword(password)
+                    .build());
+            return res.getShortIdList();
+        });
+    }
+
     private static <T> Result<T> toJavaResult(Supplier<T> func) {
         try {
             return ok(func.get());
@@ -175,4 +187,5 @@ public class GrpcShortsClient implements Shorts {
             default -> ErrorCode.INTERNAL_ERROR;
         };
     }
+
 }

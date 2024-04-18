@@ -21,6 +21,7 @@ public class RestBlobsClientClass {
             case "download":
                 download(args, client);
                 break;
+            // TODO: add remove command
         }
     }
 

@@ -43,4 +43,13 @@ public class RestBlobsClient extends RestClient implements Blobs {
                 byte[].class);
     }
 
+    @Override
+    public Result<Void> remove(String blobId) {
+        return super.toJavaResult(
+                target.path(blobId)
+                        .request().delete(),
+                null);
+
+    }
+
 }
