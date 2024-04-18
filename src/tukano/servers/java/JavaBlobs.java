@@ -44,7 +44,6 @@ public class JavaBlobs implements Blobs {
             Log.info("Failed to write bytes to file: " + fileName);
             return Result.error(Result.ErrorCode.INTERNAL_ERROR); // Or specific exception handling
         }
-
         blobs.put(blobId, bytes);
 
         return Result.ok();
@@ -62,7 +61,6 @@ public class JavaBlobs implements Blobs {
 
         String fileName = blobId;
         Path filePath = Paths.get(fileName);
-
         // Read file bytes
         try {
             byte[] bytes = Files.readAllBytes(filePath);

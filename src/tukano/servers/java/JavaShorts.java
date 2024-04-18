@@ -322,9 +322,7 @@ public class JavaShorts implements Shorts {
 
             blobUri = BlobsClientFactory.getUri();
             String blobId = rndId();
-
             blobs.put(shortId, blobId);
-
             String blobLocation = String.format(SHORT_LOCATION_FORMAT, blobUri, blobId);
             return blobLocation;
         } catch (InterruptedException e) {

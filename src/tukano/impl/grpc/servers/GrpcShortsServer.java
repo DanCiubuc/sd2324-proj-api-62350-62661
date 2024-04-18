@@ -12,7 +12,7 @@ public class GrpcShortsServer {
     public static final String SERVICE = "shorts";
     private static final String SERVER_URI_FMT = "http://%s:%s/grpc";
 
-    private static Logger Log = Logger.getLogger(GrpcUsersServer.class.getName());
+    private static Logger Log = Logger.getLogger(GrpcShortsServer.class.getName());
 
     public static void main(String[] args) throws Exception {
 

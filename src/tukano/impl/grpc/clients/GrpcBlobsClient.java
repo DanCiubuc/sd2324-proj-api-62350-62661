@@ -16,6 +16,7 @@ import java.util.function.Supplier;
 
 import static tukano.api.java.Result.error;
 import static tukano.api.java.Result.ok;
+import static tukano.impl.grpc.common.DataModelAdaptor.ByteString_to_ByteArray;
 
 public class GrpcBlobsClient implements Blobs {
 
@@ -30,11 +31,11 @@ public class GrpcBlobsClient implements Blobs {
     @Override
     public Result<Void> upload(String blobId, byte[] bytes) {
         return toJavaResult(() -> {
-            stub.upload(BlobsProtoBuf.UploadArgs.newBuilder()
+             stub.upload(BlobsProtoBuf.UploadArgs.newBuilder()
                     .setBlobId(blobId)
                     .setData(ByteString.copyFrom(bytes))
                     .build());
-            return null;
+             return null;
         });
     }
 
@@ -44,8 +45,7 @@ public class GrpcBlobsClient implements Blobs {
             var res = stub.download(BlobsProtoBuf.DownloadArgs.newBuilder()
                     .setBlobId(blobId)
                     .build());
-            return res.next().toByteArray();
-
+            return ByteString_to_ByteArray(res.next().toByteString());
         });
     }
 

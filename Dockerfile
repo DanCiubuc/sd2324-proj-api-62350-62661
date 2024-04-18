@@ -100,11 +100,18 @@ COPY target/*jar-with-dependencies.jar sd2324.jar
 
 ############################################################# GRPC ################################################################################
 
-# Start Server
+# Start Users Server
 # docker run --rm -h users-1 --network sdnet -p 9000:9000 sd2324-tp1-api-xxxxx-yyyyy java -cp sd.jar tukano.impl.grpc.servers.GrpcUsersServer
 
+# Start Shorts Server
+# docker run --rm -h shorts --name shorts --network sdnet -p 4567:4567 sd2324-tp1-api-xxxxx-yyyyy java -cp sd.jar tukano.impl.grpc.servers.GrpcShortsServer
+
+# Start Blobs Server
+# docker run --rm -h blobs1 --name blobs1 --network sdnet -p 5678:5678 sd2324-tp1-api-xxxxx-yyyyy java -cp sd.jar tukano.impl.grpc.servers.GrpcBlobsServer 1
+
+
 # Create User
-# docker run -it --network sdnet sd2324-tp1-api-xxxxx-yyyyy java -cp sd.jar tukano.impl.grpc.clients.GrpcClientClass create grpc://users-1:9000/gprc nmp 12345 nmp@nova.unl.pt "Nuno Preguica"
+# java -cp sd.jar tukano.impl.grpc.clients.GrpcClientClass create users nmp 12345 nmp@nova.unl.pt "Nuno Preguica"
 
 # Get User
 # docker run -it --network sdnet sd2324-tp1-api-xxxxx-yyyyy java -cp sd.jar tukano.impl.grpc.clients.GrpcClientClass get grpc://users-1:9000/gprc nmp 12345

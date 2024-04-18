@@ -21,8 +21,6 @@ import tukano.impl.grpc.generated_java.UsersProtoBuf.UpdateUserArgs;
 import tukano.impl.grpc.generated_java.UsersProtoBuf.UpdateUserResult;
 import tukano.servers.java.JavaUsers;
 
-import java.util.List;
-
 public class GrpcUsersServerStub implements UsersGrpc.AsyncService, BindableService {
 
 	Users impl = new JavaUsers();

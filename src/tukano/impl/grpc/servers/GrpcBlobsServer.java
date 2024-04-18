@@ -17,7 +17,7 @@ public class GrpcBlobsServer {
 
     public static void main(String[] args) throws Exception {
 
-        var stub = new GrpcUsersServerStub();
+        var stub = new GrpcBlobsServerStub();
         var server = ServerBuilder.forPort(PORT).addService(stub).build();
 
         String ip = InetAddress.getLocalHost().getHostAddress();

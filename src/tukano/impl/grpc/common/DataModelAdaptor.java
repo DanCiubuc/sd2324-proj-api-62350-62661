@@ -1,5 +1,6 @@
 package tukano.impl.grpc.common;
 
+import com.google.protobuf.ByteString;
 import tukano.api.User;
 import tukano.api.Short;
 
@@ -38,11 +39,20 @@ public class DataModelAdaptor {
 		return GrpcShort.newBuilder()
 				.setShortId(from.getShortId())
 				.setOwnerId(from.getOwnerId())
-				.setBlobUrl(from.getOwnerId())
+				.setBlobUrl(from.getBlobUrl())
 				.setTimestamp(from.getTimestamp())
 				.setTotalLikes(from.getTotalLikes())
 				.build();
 	}
+
+	public static byte[] ByteString_to_ByteArray(ByteString string) {
+		return string.toByteArray();
+	}
+
+	public static ByteString ByteArray_to_ByteString(byte[] bytes) {
+		return ByteString.copyFrom(bytes);
+	}
+
 	private static String emptyStringToNull( String s ) {
 		return s == null || s.isEmpty() ? null: s;
 	}

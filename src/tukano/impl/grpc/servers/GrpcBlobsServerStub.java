@@ -13,6 +13,8 @@ import tukano.impl.grpc.generated_java.BlobsProtoBuf.UploadArgs;
 import tukano.impl.grpc.generated_java.BlobsProtoBuf.DownloadResult;
 import tukano.impl.grpc.generated_java.BlobsProtoBuf.UploadResult;
 
+import static tukano.impl.grpc.common.DataModelAdaptor.User_to_GrpcUser;
+
 public class GrpcBlobsServerStub implements BlobsGrpc.AsyncService, BindableService {
     Blobs impl = new JavaBlobs();
 
@@ -38,7 +40,9 @@ public class GrpcBlobsServerStub implements BlobsGrpc.AsyncService, BindableServ
         if (!res.isOK())
             responseObserver.onError(errorCodeToStatus(res.error()));
         else {
-            responseObserver.onNext(DownloadResult.newBuilder().setChunk(ByteString.copyFrom(res.value())).build());
+            byte[] bytes = res.value();
+            ByteString b = ByteString.copyFrom(bytes);
+            responseObserver.onNext(DownloadResult.newBuilder().setChunk(ByteString.copyFrom(bytes)).build());
             responseObserver.onCompleted();
         }
     }
