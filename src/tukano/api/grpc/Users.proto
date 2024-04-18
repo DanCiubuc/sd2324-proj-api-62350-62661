@@ -15,7 +15,7 @@ service Users {
 
 	rpc deleteUser( DeleteUserArgs) returns (DeleteUserResult){}
 
-	rpc searchUsers( SearchUserArgs) returns ( SearchUserResult){}
+	rpc searchUsers( SearchUserArgs) returns ( stream GrpcUser){}
 
 }
 
@@ -64,8 +64,4 @@ message DeleteUserResult {
 
 message SearchUserArgs {
 	string pattern = 1;
-}
-
-message SearchUserResult {
-	repeated GrpcUser users = 1;
 }

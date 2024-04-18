@@ -86,10 +86,9 @@ public class GrpcUsersClient implements Users {
 					.setPattern(pattern)
 					.build());
 			List<User> userList = new ArrayList<>();
-			List<GrpcUser> resList = res.getUsersList();
-			for (GrpcUser grpcUser : resList) {
-				User user = GrpcUser_to_User(grpcUser);
-				userList.add(user);
+			while (res.hasNext()) {
+				GrpcUser user = res.next();
+				userList.add(GrpcUser_to_User(user));
 			}
 			return userList;
 		});

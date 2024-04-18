@@ -83,6 +83,7 @@ public interface Shorts {
 	 * @param password - the password of the followed user
 	 * @return (OK, List<String>|empty list) the list of users that follow another
 	 *         user, or empty if the user has no followers
+	 *         CONFLICT if the follow already exists.
 	 *         NOT_FOUND if the user does not exists
 	 *         FORBIDDEN if the password is incorrect
 	 */

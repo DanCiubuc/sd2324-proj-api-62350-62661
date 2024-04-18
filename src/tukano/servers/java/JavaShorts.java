@@ -139,9 +139,9 @@ public class JavaShorts implements Shorts {
     public Result<Void> follow(String userId1, String userId2, boolean isFollowing, String password) {
         Users users = UsersClientFactory.getClient();
 
-        ErrorCode error1 = users.searchUsers(userId1).error();
-        ErrorCode error2 = users.searchUsers(userId2).error();
-        if (error1.equals(ErrorCode.BAD_REQUEST) || error2.equals(ErrorCode.BAD_REQUEST)) {
+        ErrorCode error1 = users.getUser(userId1, password).error();
+        ErrorCode error2 = users.getUser(userId2, "").error();
+        if (error1.equals(ErrorCode.NOT_FOUND) || error2.equals(ErrorCode.NOT_FOUND)) {
             Log.info("One of the users doesn't exist.");
             return Result.error(ErrorCode.NOT_FOUND);
         }

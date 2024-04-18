@@ -79,10 +79,13 @@ public class JavaUsers implements Users {
 
         // With this code block we pass test 2 but fail test 8a
         // The id of the User can't be changed
-        // if (user.getUserId() != null) {
-        // Log.info("Can't change userId.");
-        // return Result.error(ErrorCode.BAD_REQUEST);
-        // }
+        // user.getUserId() != null ||
+        if(user.getUserId() != null) {
+            if (!user.getUserId().equals(userId)) {
+                Log.info("Can't change userId.");
+                return Result.error(ErrorCode.BAD_REQUEST);
+            }
+        }
 
         List<User> existingUsers = getUserHibernate(userId);
 
@@ -190,22 +193,5 @@ public class JavaUsers implements Users {
     private List<User> getUserHibernate(String userId) {
         return Hibernate.getInstance().sql(String.format("SELECT * FROM User u WHERE u.userId LIKE '%%%s%%'", userId),
                 User.class);
-    }
-
-    private List<User> matchPattern(String pattern) {
-        String regexPattern = Pattern.quote(pattern);
-        // Convert '*' wildcard to regular expression equivalent '.+'
-        regexPattern = regexPattern.replaceAll("\\*", ".+");
-        Pattern compiledPattern = Pattern.compile(regexPattern);
-
-        List<User> existing_users = Hibernate.getInstance().sql("SELECT * FROM User u", User.class);
-        List<User> userList = new ArrayList<>();
-        for (User user : existing_users) {
-            String userId = user.getUserId();
-            if (compiledPattern.matcher(userId).matches()) {
-                userList.add(user);
-            }
-        }
-        return userList;
     }
 }

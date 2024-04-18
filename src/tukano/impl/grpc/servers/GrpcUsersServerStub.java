@@ -17,7 +17,6 @@ import tukano.impl.grpc.generated_java.UsersProtoBuf.DeleteUserResult;
 import tukano.impl.grpc.generated_java.UsersProtoBuf.GetUserArgs;
 import tukano.impl.grpc.generated_java.UsersProtoBuf.GetUserResult;
 import tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserArgs;
-import tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserResult;
 import tukano.impl.grpc.generated_java.UsersProtoBuf.UpdateUserArgs;
 import tukano.impl.grpc.generated_java.UsersProtoBuf.UpdateUserResult;
 import tukano.servers.java.JavaUsers;
@@ -78,20 +77,14 @@ public class GrpcUsersServerStub implements UsersGrpc.AsyncService, BindableServ
 	}
 
 	@Override
-	public void searchUsers(SearchUserArgs request, StreamObserver<SearchUserResult> responseObserver) {
+	public void searchUsers(SearchUserArgs request, StreamObserver<GrpcUser> responseObserver) {
 		var res = impl.searchUsers(request.getPattern());
 		if (!res.isOK())
 			responseObserver.onError(errorCodeToStatus(res.error()));
 		else {
-			List<User> list = res.value();
-			SearchUserResult.Builder searchUserResultBuilder = SearchUserResult.newBuilder();
-			int cont = 0;
-			for (User user : list) {
-				GrpcUser grpcUser = User_to_GrpcUser(user);
-				searchUserResultBuilder.setUsers(cont, grpcUser);
-				cont++;
+			for (User user : res.value()) {
+				responseObserver.onNext(User_to_GrpcUser(user));
 			}
-			responseObserver.onNext(searchUserResultBuilder.build());
 			responseObserver.onCompleted();
 		}
 	}

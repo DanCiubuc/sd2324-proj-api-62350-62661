@@ -44,6 +44,6 @@ public class DataModelAdaptor {
 				.build();
 	}
 	private static String emptyStringToNull( String s ) {
-		return s == null || s.length() == 0 ? null: s;
+		return s == null || s.isEmpty() ? null: s;
 	}
 }

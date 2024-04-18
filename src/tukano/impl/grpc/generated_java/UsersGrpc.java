@@ -140,28 +140,28 @@ public final class UsersGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserArgs,
-      tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserResult> getSearchUsersMethod;
+      tukano.impl.grpc.generated_java.UsersProtoBuf.GrpcUser> getSearchUsersMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "searchUsers",
       requestType = tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserArgs.class,
-      responseType = tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserResult.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+      responseType = tukano.impl.grpc.generated_java.UsersProtoBuf.GrpcUser.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
   public static io.grpc.MethodDescriptor<tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserArgs,
-      tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserResult> getSearchUsersMethod() {
-    io.grpc.MethodDescriptor<tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserArgs, tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserResult> getSearchUsersMethod;
+      tukano.impl.grpc.generated_java.UsersProtoBuf.GrpcUser> getSearchUsersMethod() {
+    io.grpc.MethodDescriptor<tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserArgs, tukano.impl.grpc.generated_java.UsersProtoBuf.GrpcUser> getSearchUsersMethod;
     if ((getSearchUsersMethod = UsersGrpc.getSearchUsersMethod) == null) {
       synchronized (UsersGrpc.class) {
         if ((getSearchUsersMethod = UsersGrpc.getSearchUsersMethod) == null) {
           UsersGrpc.getSearchUsersMethod = getSearchUsersMethod =
-              io.grpc.MethodDescriptor.<tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserArgs, tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserResult>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              io.grpc.MethodDescriptor.<tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserArgs, tukano.impl.grpc.generated_java.UsersProtoBuf.GrpcUser>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "searchUsers"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserArgs.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserResult.getDefaultInstance()))
+                  tukano.impl.grpc.generated_java.UsersProtoBuf.GrpcUser.getDefaultInstance()))
               .setSchemaDescriptor(new UsersMethodDescriptorSupplier("searchUsers"))
               .build();
         }
@@ -249,7 +249,7 @@ public final class UsersGrpc {
     /**
      */
     default void searchUsers(tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserArgs request,
-        io.grpc.stub.StreamObserver<tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserResult> responseObserver) {
+        io.grpc.stub.StreamObserver<tukano.impl.grpc.generated_java.UsersProtoBuf.GrpcUser> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getSearchUsersMethod(), responseObserver);
     }
   }
@@ -316,8 +316,8 @@ public final class UsersGrpc {
     /**
      */
     public void searchUsers(tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserArgs request,
-        io.grpc.stub.StreamObserver<tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserResult> responseObserver) {
-      io.grpc.stub.ClientCalls.asyncUnaryCall(
+        io.grpc.stub.StreamObserver<tukano.impl.grpc.generated_java.UsersProtoBuf.GrpcUser> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncServerStreamingCall(
           getChannel().newCall(getSearchUsersMethod(), getCallOptions()), request, responseObserver);
     }
   }
@@ -368,8 +368,9 @@ public final class UsersGrpc {
 
     /**
      */
-    public tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserResult searchUsers(tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserArgs request) {
-      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+    public java.util.Iterator<tukano.impl.grpc.generated_java.UsersProtoBuf.GrpcUser> searchUsers(
+        tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserArgs request) {
+      return io.grpc.stub.ClientCalls.blockingServerStreamingCall(
           getChannel(), getSearchUsersMethod(), getCallOptions(), request);
     }
   }
@@ -421,14 +422,6 @@ public final class UsersGrpc {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getDeleteUserMethod(), getCallOptions()), request);
     }
-
-    /**
-     */
-    public com.google.common.util.concurrent.ListenableFuture<tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserResult> searchUsers(
-        tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserArgs request) {
-      return io.grpc.stub.ClientCalls.futureUnaryCall(
-          getChannel().newCall(getSearchUsersMethod(), getCallOptions()), request);
-    }
   }
 
   private static final int METHODID_CREATE_USER = 0;
@@ -472,7 +465,7 @@ public final class UsersGrpc {
           break;
         case METHODID_SEARCH_USERS:
           serviceImpl.searchUsers((tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserArgs) request,
-              (io.grpc.stub.StreamObserver<tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserResult>) responseObserver);
+              (io.grpc.stub.StreamObserver<tukano.impl.grpc.generated_java.UsersProtoBuf.GrpcUser>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -522,10 +515,10 @@ public final class UsersGrpc {
                 service, METHODID_DELETE_USER)))
         .addMethod(
           getSearchUsersMethod(),
-          io.grpc.stub.ServerCalls.asyncUnaryCall(
+          io.grpc.stub.ServerCalls.asyncServerStreamingCall(
             new MethodHandlers<
               tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserArgs,
-              tukano.impl.grpc.generated_java.UsersProtoBuf.SearchUserResult>(
+              tukano.impl.grpc.generated_java.UsersProtoBuf.GrpcUser>(
                 service, METHODID_SEARCH_USERS)))
         .build();
   }
