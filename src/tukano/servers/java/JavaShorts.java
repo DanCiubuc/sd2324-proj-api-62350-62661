@@ -80,7 +80,6 @@ public class JavaShorts implements Shorts {
     public Result<List<String>> getShorts(String userId) {
         Users users = UsersClientFactory.getClient();
         Log.info("id:" + " " + userId);
-        Log.info(users.getUser(userId, "").error().toString());
         if (users.getUser(userId, "").error().equals(ErrorCode.NOT_FOUND)) {
             Log.info("User doesn't exist.");
             return Result.error(ErrorCode.NOT_FOUND);

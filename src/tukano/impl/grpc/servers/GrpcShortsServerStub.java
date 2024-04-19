@@ -3,7 +3,9 @@ package tukano.impl.grpc.servers;
 import static tukano.impl.grpc.common.DataModelAdaptor.GrpcShort_to_Short;
 import static tukano.impl.grpc.common.DataModelAdaptor.Short_to_GrpcShort;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import io.grpc.BindableService;
 import io.grpc.ServerServiceDefinition;
@@ -40,6 +42,8 @@ import tukano.api.java.Shorts;
 
 public class GrpcShortsServerStub implements ShortsGrpc.AsyncService, BindableService {
     Shorts impl = new JavaShorts();
+
+    private static Logger Log = Logger.getLogger(GrpcShortsServerStub.class.getName());
 
     @Override
     public ServerServiceDefinition bindService() {
@@ -88,14 +92,8 @@ public class GrpcShortsServerStub implements ShortsGrpc.AsyncService, BindableSe
         if (!res.isOK())
             responseObserver.onError(errorCodeToStatus(res.error()));
         else {
-            List<String> list = res.value();
-            FollowersResult.Builder FollowersResultBuilder = FollowersResult.newBuilder();
-            int cont = 0;
-            for (String userId : list) {
-                FollowersResultBuilder.setUserId(cont, userId);
-                cont++;
-            }
-            responseObserver.onNext(FollowersResultBuilder.build());
+            List<String> followers = new ArrayList<>(res.value());
+            responseObserver.onNext(FollowersResult.newBuilder().addAllUserId(followers).build());
             responseObserver.onCompleted();
         }
     }
@@ -106,14 +104,8 @@ public class GrpcShortsServerStub implements ShortsGrpc.AsyncService, BindableSe
         if (!res.isOK())
             responseObserver.onError(errorCodeToStatus(res.error()));
         else {
-            List<String> list = res.value();
-            GetFeedResult.Builder GetFeedResultBuilder = GetFeedResult.newBuilder();
-            int cont = 0;
-            for (String shortId : list) {
-                GetFeedResultBuilder.setShortId(cont, shortId);
-                cont++;
-            }
-            responseObserver.onNext(GetFeedResultBuilder.build());
+            List<String> feed = new ArrayList<>(res.value());
+            responseObserver.onNext(GetFeedResult.newBuilder().addAllShortId(feed).build());
             responseObserver.onCompleted();
         }
     }
@@ -135,14 +127,8 @@ public class GrpcShortsServerStub implements ShortsGrpc.AsyncService, BindableSe
         if (!res.isOK())
             responseObserver.onError(errorCodeToStatus(res.error()));
         else {
-            List<String> list = res.value();
-            GetShortsResult.Builder GetShortsResultBuilder = GetShortsResult.newBuilder();
-            int cont = 0;
-            for (String shortId : list) {
-                GetShortsResultBuilder.setShortId(cont, shortId);
-                cont++;
-            }
-            responseObserver.onNext(GetShortsResultBuilder.build());
+            List<String> shortIdList = new ArrayList<>(res.value());
+            responseObserver.onNext(GetShortsResult.newBuilder().addAllShortId(shortIdList).build() );
             responseObserver.onCompleted();
         }
 
@@ -165,14 +151,8 @@ public class GrpcShortsServerStub implements ShortsGrpc.AsyncService, BindableSe
         if (!res.isOK())
             responseObserver.onError(errorCodeToStatus(res.error()));
         else {
-            List<String> list = res.value();
-            LikesResult.Builder LikesResultBuilder = LikesResult.newBuilder();
-            int cont = 0;
-            for (String userId : list) {
-                LikesResultBuilder.setUserId(cont, userId);
-                cont++;
-            }
-            responseObserver.onNext(LikesResultBuilder.build());
+            List<String> likes = new ArrayList<>(res.value());
+            responseObserver.onNext(LikesResult.newBuilder().addAllUserId(likes).build());
             responseObserver.onCompleted();
         }
     }
@@ -183,14 +163,8 @@ public class GrpcShortsServerStub implements ShortsGrpc.AsyncService, BindableSe
         if (!res.isOK())
             responseObserver.onError(errorCodeToStatus(res.error()));
         else {
-            List<String> list = res.value();
-            LikeHistoryResult.Builder LikeHistoryResultBuilder = LikeHistoryResult.newBuilder();
-            int cont = 0;
-            for (String shortId : list) {
-                LikeHistoryResultBuilder.setShortId(cont, shortId);
-                cont++;
-            }
-            responseObserver.onNext(LikeHistoryResultBuilder.build());
+            List<String> history = new ArrayList<>(res.value());
+            responseObserver.onNext(LikeHistoryResult.newBuilder().addAllShortId(history).build());
             responseObserver.onCompleted();
         }
     }
