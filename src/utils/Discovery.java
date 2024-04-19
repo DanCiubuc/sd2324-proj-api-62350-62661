@@ -53,15 +53,10 @@ class DiscoveryImpl implements Discovery {
 
     private static Logger Log = Logger.getLogger(Discovery.class.getName());
 
-    // TODO: utilizar shorts.props file
-
     // The pre-aggreed multicast endpoint assigned to perform discovery.
-
     static final int DISCOVERY_RETRY_TIMEOUT = 5000;
     static final int DISCOVERY_ANNOUNCE_PERIOD = 1000;
 
-    // Replace with appropriate values: allowed IP Multicast range: 224.0.0.1 -
-    // 239.255.255.255
     static final InetSocketAddress DISCOVERY_ADDR = new InetSocketAddress("226.226.226.226", 2262);
 
     // Used to separate the two fields that make up a service announcement.
@@ -78,8 +73,6 @@ class DiscoveryImpl implements Discovery {
         }
         return singleton;
     }
-
-    // private Map<String, URI> mapping = new HashMap<>();
 
     private DiscoveryImpl() {
         this.startListener();
@@ -117,19 +110,22 @@ class DiscoveryImpl implements Discovery {
         long startTime = System.currentTimeMillis();
         while (mapping.get(serviceName) == null || mapping.size() < minEntries) {
             /*
-            long elapsedTime = System.currentTimeMillis() - startTime;
-            if (elapsedTime > DISCOVERY_RETRY_TIMEOUT) {
-                // Timeout reached, return null or empty array
-                return null;
-            }*/
-            wait(DISCOVERY_RETRY_TIMEOUT ); // Wait for remaining timeout
+             * long elapsedTime = System.currentTimeMillis() - startTime;
+             * if (elapsedTime > DISCOVERY_RETRY_TIMEOUT) {
+             * // Timeout reached, return null or empty array
+             * return null;
+             * }
+             */
+            wait(DISCOVERY_RETRY_TIMEOUT); // Wait for remaining timeout
         }
+        // TODO: remove all this junk, not sure if we may need or not
         /*
-        // System.out.println(mapping);
-        // flag to signal to the listener thread that this instance of discovery no
-        // longer is necessary, since the client already got the service he wanted
-        clientGotUri = true;
-        // Return all URIs for the service name (modify if needed) */
+         * // System.out.println(mapping);
+         * // flag to signal to the listener thread that this instance of discovery no
+         * // longer is necessary, since the client already got the service he wanted
+         * clientGotUri = true;
+         * // Return all URIs for the service name (modify if needed)
+         */
         return mapping.get(serviceName);
     }
 
@@ -149,7 +145,6 @@ class DiscoveryImpl implements Discovery {
                         ms.receive(pkt);
 
                         var msg = new String(pkt.getData(), 0, pkt.getLength());
-                        // Log.info(String.format("Received: %s", msg));
 
                         var parts = msg.split(DELIMITER);
                         if (parts.length == 2) {
