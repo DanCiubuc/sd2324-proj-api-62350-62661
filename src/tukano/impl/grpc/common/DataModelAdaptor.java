@@ -7,6 +7,8 @@ import tukano.api.Short;
 import tukano.impl.grpc.generated_java.ShortsProtoBuf.GrpcShort;
 import tukano.impl.grpc.generated_java.UsersProtoBuf.GrpcUser;
 
+import java.util.Arrays;
+
 public class DataModelAdaptor {
 
 	public static User GrpcUser_to_User(GrpcUser from) {
@@ -43,14 +45,6 @@ public class DataModelAdaptor {
 				.setTimestamp(from.getTimestamp())
 				.setTotalLikes(from.getTotalLikes())
 				.build();
-	}
-
-	public static byte[] ByteString_to_ByteArray(ByteString string) {
-		return string.toByteArray();
-	}
-
-	public static ByteString ByteArray_to_ByteString(byte[] bytes) {
-		return ByteString.copyFrom(bytes);
 	}
 
 	private static String emptyStringToNull( String s ) {

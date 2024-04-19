@@ -9,14 +9,16 @@ import tukano.api.java.Result;
 import tukano.impl.grpc.generated_java.BlobsGrpc;
 import tukano.impl.grpc.generated_java.BlobsProtoBuf;
 import tukano.impl.grpc.generated_java.BlobsProtoBuf.RemoveArgs;
+import utils.Hash;
+import utils.Hex;
 
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+import java.util.logging.Logger;
 
 import static tukano.api.java.Result.error;
 import static tukano.api.java.Result.ok;
-import static tukano.impl.grpc.common.DataModelAdaptor.ByteString_to_ByteArray;
 
 public class GrpcBlobsClient implements Blobs {
 
@@ -27,6 +29,8 @@ public class GrpcBlobsClient implements Blobs {
         var channel = ManagedChannelBuilder.forAddress(serverURI.getHost(), serverURI.getPort()).usePlaintext().build();
         stub = BlobsGrpc.newBlockingStub(channel).withDeadlineAfter(GRPC_REQUEST_TIMEOUT, TimeUnit.MILLISECONDS);
     }
+
+    private static Logger Log = Logger.getLogger(GrpcBlobsClient.class.getName());
 
     @Override
     public Result<Void> upload(String blobId, byte[] bytes) {
@@ -45,7 +49,8 @@ public class GrpcBlobsClient implements Blobs {
             var res = stub.download(BlobsProtoBuf.DownloadArgs.newBuilder()
                     .setBlobId(blobId)
                     .build());
-            return ByteString_to_ByteArray(res.next().toByteString());
+            Log.info(() -> String.format("downloadClient : sha256 = %s\n", Hex.of(Hash.sha256(res.next().getChunk().toByteArray()))));
+            return res.next().getChunk().toByteArray();
         });
     }
 

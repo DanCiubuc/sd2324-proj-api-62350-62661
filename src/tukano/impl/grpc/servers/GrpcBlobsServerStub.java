@@ -1,5 +1,4 @@
 package tukano.impl.grpc.servers;
-
 import com.google.protobuf.ByteString;
 import io.grpc.BindableService;
 import io.grpc.ServerServiceDefinition;
@@ -12,11 +11,16 @@ import tukano.impl.grpc.generated_java.BlobsProtoBuf.DownloadArgs;
 import tukano.impl.grpc.generated_java.BlobsProtoBuf.UploadArgs;
 import tukano.impl.grpc.generated_java.BlobsProtoBuf.DownloadResult;
 import tukano.impl.grpc.generated_java.BlobsProtoBuf.UploadResult;
+import utils.Hash;
+import utils.Hex;
 
-import static tukano.impl.grpc.common.DataModelAdaptor.User_to_GrpcUser;
+import java.util.logging.Logger;
 
 public class GrpcBlobsServerStub implements BlobsGrpc.AsyncService, BindableService {
     Blobs impl = new JavaBlobs();
+
+    private static Logger Log = Logger.getLogger(GrpcBlobsServerStub.class.getName());
+
 
     @Override
     public ServerServiceDefinition bindService() {
@@ -25,7 +29,7 @@ public class GrpcBlobsServerStub implements BlobsGrpc.AsyncService, BindableServ
 
     @Override
     public void upload(UploadArgs request, StreamObserver<UploadResult> responseObserver) {
-        var res = impl.upload(request.getBlobId(), request.getBlobIdBytes().toByteArray());
+        var res = impl.upload(request.getBlobId(), request.getData().toByteArray());
         if (!res.isOK())
             responseObserver.onError(errorCodeToStatus(res.error()));
         else {
@@ -40,9 +44,9 @@ public class GrpcBlobsServerStub implements BlobsGrpc.AsyncService, BindableServ
         if (!res.isOK())
             responseObserver.onError(errorCodeToStatus(res.error()));
         else {
-            byte[] bytes = res.value();
-            ByteString b = ByteString.copyFrom(bytes);
-            responseObserver.onNext(DownloadResult.newBuilder().setChunk(ByteString.copyFrom(bytes)).build());
+            Log.info(() -> String.format("downloadStub : sha256 = %s\n", Hex.of(Hash.sha256(res.value()))));
+            Log.info(() -> String.format("Converted downloadStub : sha256 = %s\n", Hex.of(Hash.sha256(ByteString.copyFrom(res.value()).toByteArray()))));
+            responseObserver.onNext(DownloadResult.newBuilder().setChunk(ByteString.copyFrom(res.value())).build());
             responseObserver.onCompleted();
         }
     }

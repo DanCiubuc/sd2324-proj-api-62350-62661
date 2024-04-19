@@ -1,6 +1,8 @@
 package tukano.impl.grpc.clients;
 
 import tukano.api.User;
+import tukano.clients.rest.RestUsersClient;
+import utils.Discovery;
 
 import java.io.IOException;
 import java.net.URI;
@@ -9,10 +11,12 @@ import java.util.logging.Logger;
 public class GrpcClientClass {
 
     private static Logger Log = Logger.getLogger(GrpcClientClass.class.getName());
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         String command = args[0];
-        String serverUrl = args[1];
-        var client = new GrpcUsersClient( URI.create( serverUrl ) );
+        String serviceName = args[1];
+        Discovery disc = Discovery.getInstance();
+        URI serverUrl = disc.knownUrisOf(serviceName, 1).get(0);
+        var client = new GrpcUsersClient(serverUrl);
 
         switch (command) {
             case "create":

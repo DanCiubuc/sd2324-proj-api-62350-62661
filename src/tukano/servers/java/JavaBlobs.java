@@ -4,6 +4,8 @@ import tukano.api.java.Blobs;
 import tukano.api.java.Result;
 import tukano.api.java.Shorts;
 import tukano.clients.ShortsClientFactory;
+import utils.Hash;
+import utils.Hex;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,9 +21,12 @@ public class JavaBlobs implements Blobs {
 
     private static Logger Log = Logger.getLogger(JavaBlobs.class.getName());
 
+
+
     @Override
     public Result<Void> upload(String blobId, byte[] bytes) {
         Log.info("Info Received upload : blobId = " + blobId);
+        Log.info(() -> String.format("upload : blobId = %s, sha256 = %s\n", blobId, Hex.of(Hash.sha256(bytes))));
 
         // if a blobId exists but bytes do not match
         if (blobs.get(blobId) != null && blobs.get(blobId) != bytes) {
@@ -64,6 +69,7 @@ public class JavaBlobs implements Blobs {
         // Read file bytes
         try {
             byte[] bytes = Files.readAllBytes(filePath);
+            Log.info(() -> String.format("download : blobId = %s, sha256 = %s\n", blobId, Hex.of(Hash.sha256(bytes))));
             return Result.ok(bytes);
         } catch (IOException e) {
             // Handle potential exceptions like file not found
