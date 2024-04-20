@@ -1,6 +1,5 @@
 package tukano.impl.grpc.servers;
 
-import static tukano.impl.grpc.common.DataModelAdaptor.GrpcShort_to_Short;
 import static tukano.impl.grpc.common.DataModelAdaptor.Short_to_GrpcShort;
 
 import java.util.ArrayList;

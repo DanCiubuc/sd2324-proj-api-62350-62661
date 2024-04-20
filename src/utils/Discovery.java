@@ -156,8 +156,11 @@ class DiscoveryImpl implements Discovery {
                             }
 
                             List<URI> serviceUris = mapping.get(serviceName);
-                            serviceUris.add(uri);
-                            mapping.put(serviceName, serviceUris);
+                            if(!serviceUris.contains(uri)) {
+                                serviceUris.add(uri);
+                                mapping.put(serviceName, serviceUris);
+                            }
+
                         }
 
                     } catch (Exception x) {
