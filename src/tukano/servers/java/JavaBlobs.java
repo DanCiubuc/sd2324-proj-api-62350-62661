@@ -43,6 +43,7 @@ public class JavaBlobs implements Blobs {
         String fileName = blobId; // Or any desired naming convention
         Path filePath = Paths.get(fileName);
         try {
+            // Writing bytes to file path
             Files.write(filePath, bytes);
             Log.info("Successfully wrote bytes to file: " + fileName);
         } catch (IOException e) {
@@ -50,7 +51,6 @@ public class JavaBlobs implements Blobs {
             return Result.error(Result.ErrorCode.INTERNAL_ERROR); // Or specific exception handling
         }
         blobs.put(blobId, bytes);
-
         return Result.ok();
     }
 
@@ -113,7 +113,6 @@ public class JavaBlobs implements Blobs {
         }
 
         blobs.remove(blobId);
-
         return Result.ok();
     }
 

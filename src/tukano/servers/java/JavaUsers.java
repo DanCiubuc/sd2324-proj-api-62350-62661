@@ -32,7 +32,7 @@ public class JavaUsers implements Users {
             Log.info("User already exists.");
             return Result.error(ErrorCode.CONFLICT);
         }
-
+        // Creating User
         Hibernate.getInstance().persist(user);
         return Result.ok(user.userId());
     }
@@ -73,9 +73,8 @@ public class JavaUsers implements Users {
             return Result.error(ErrorCode.BAD_REQUEST);
         }
 
-        // With this code block we pass test 2 but fail test 8a
+
         // The id of the User can't be changed
-        // user.getUserId() != null ||
         if (user.getUserId() != null) {
             if (!user.getUserId().equals(userId)) {
                 Log.info("Can't change userId.");
@@ -98,18 +97,19 @@ public class JavaUsers implements Users {
             Log.info("Password is incorrect.");
             return Result.error(ErrorCode.FORBIDDEN);
         }
-
+        // Change Password
         if (user.getPwd() != null) {
             newUserInfo.setPwd(user.getPwd());
         }
-
+        // Change Display Name
         if (user.getDisplayName() != null) {
             newUserInfo.setDisplayName(user.displayName());
         }
-
+        // Change Email
         if (user.getEmail() != null) {
             newUserInfo.setEmail(user.getEmail());
         }
+        // Updating User
         Hibernate.getInstance().update(newUserInfo);
         return Result.ok(newUserInfo);
     }
@@ -143,6 +143,7 @@ public class JavaUsers implements Users {
             List<String> shortIds = shortsResponse.value();
 
             for (String shortId : shortIds) {
+                // Removing each Short
                 shortsService.deleteShort(shortId, pwd);
             }
         }
@@ -152,15 +153,13 @@ public class JavaUsers implements Users {
         if (likeHistory.isOK()) {
             List<String> shortIds = likeHistory.value();
 
-            Log.info("Like History: " + shortIds.toString());
-
             for (String shortId : shortIds) {
+                // Removing each Like
                 shortsService.like(shortId, userId, false, pwd);
             }
         }
-
+        // Deleting User
         Hibernate.getInstance().delete(user);
-
         return Result.ok(user);
     }
 
@@ -172,12 +171,14 @@ public class JavaUsers implements Users {
 
         if (pattern == null || pattern.trim().isEmpty()) {
             for (int i = 0; i < existing_users.size(); i++) {
+                // Returning all the users
                 userList.add(i, existing_users.get(i));
             }
             return Result.ok(userList);
         } else {
             for (User user : existing_users) {
                 String userId = user.getUserId();
+                // Comparing each userId to the pattern received
                 if (userId.toLowerCase().contains(pattern.toLowerCase())) {
                     userList.add(user);
                 }
@@ -187,6 +188,7 @@ public class JavaUsers implements Users {
     }
 
     private List<User> getUserHibernate(String userId) {
+        // Query used to select a user based on its id
         return Hibernate.getInstance().sql(String.format("SELECT * FROM User u WHERE u.userId LIKE '%%%s%%'", userId),
                 User.class);
     }

@@ -76,7 +76,6 @@ public class JavaShorts implements Shorts {
             return Result.error(ErrorCode.NOT_FOUND);
         }
         Short shortObj = shorts_list.get(0);
-        Log.info(shortObj.toString());
         return Result.ok(shortObj);
     }
 
@@ -119,7 +118,7 @@ public class JavaShorts implements Shorts {
 
         // Communicate with User Service to verify if the password is valid
         Users users = UsersClientFactory.getClient();
-
+        // Checking if the password is correct
         if (users.getUser(ownerId, password).error().equals(ErrorCode.FORBIDDEN)) {
             Log.info("Incorrect password.");
             return Result.error(ErrorCode.FORBIDDEN);
@@ -134,9 +133,6 @@ public class JavaShorts implements Shorts {
         // the rest of the string, after the ADDRESS_ID_SEPARATOR, corresponds with the
         // id of the blob
         String blobId = blobUrl.substring(blobUrl.lastIndexOf(DELIMITER) + 1);
-
-        Log.info(blobsAddress);
-        Log.info(blobId);
 
         // Communicate with Blob Service that stores this shorts video
         Blobs blobsService = BlobsClientFactory.getClient(blobsAddress);
@@ -157,11 +153,12 @@ public class JavaShorts implements Shorts {
 
         ErrorCode error1 = users.getUser(userId1, password).error();
         ErrorCode error2 = users.getUser(userId2, "").error();
+        // Checkin if the users exist
         if (error1.equals(ErrorCode.NOT_FOUND) || error2.equals(ErrorCode.NOT_FOUND)) {
             Log.info("One of the users doesn't exist.");
             return Result.error(ErrorCode.NOT_FOUND);
         }
-
+        // Checking if the password is correct
         if (users.getUser(userId1, password).error().equals(ErrorCode.FORBIDDEN)) {
             Log.info("Incorrect password.");
             return Result.error(ErrorCode.FORBIDDEN);
@@ -176,12 +173,14 @@ public class JavaShorts implements Shorts {
                 return Result.error(ErrorCode.CONFLICT);
             }
             Follow follow = new Follow(userId2, userId1);
+            // Adding Follow
             Hibernate.getInstance().persist(follow);
 
         } else {
             // deals with the case where the user unfollows another
             if (!list_follow.isEmpty()) {
                 Follow f = list_follow.get(0);
+                // Removing Follow
                 Hibernate.getInstance().delete(f);
             }
 
@@ -195,11 +194,11 @@ public class JavaShorts implements Shorts {
         Users users = UsersClientFactory.getClient();
 
         ErrorCode error = users.getUser(userId, password).error();
-
+        // Checking if user exists
         if (error.equals(ErrorCode.NOT_FOUND)) {
             Log.info("User doesn't exist.");
         }
-
+        // Checking of the password is correct
         if (error.equals(ErrorCode.FORBIDDEN)) {
             Log.info("Password incorect.");
         }
@@ -213,12 +212,12 @@ public class JavaShorts implements Shorts {
     public Result<List<String>> getFeed(String userId, String password) {
         // checks if the information provided is valid
         Users users = UsersClientFactory.getClient();
-
+        // Checking if the user exists
         if (users.getUser(userId, password).error().equals(ErrorCode.NOT_FOUND)) {
             Log.info("User doesn't exist.");
             return Result.error(ErrorCode.NOT_FOUND);
         }
-
+        // Checking if the password is correct
         if (users.getUser(userId, password).error().equals(ErrorCode.FORBIDDEN)) {
             Log.info("Incorrect password.");
             return Result.error(ErrorCode.FORBIDDEN);
@@ -228,6 +227,7 @@ public class JavaShorts implements Shorts {
         List<String> shortsInFeed = new ArrayList<String>();
         List<Short> shorts = getShortFromUser(userId);
         for (Short el : shorts) {
+            // Adding shorts to Feed
             shortsInFeed.add(el.getShortId());
         }
 
@@ -238,12 +238,12 @@ public class JavaShorts implements Shorts {
     public Result<Void> like(String shortId, String userId, boolean isLiked, String password) {
         // verifies if the user related information is valid
         Users users = UsersClientFactory.getClient();
-
+        // Checking if the user exists
         if (users.getUser(userId, password).error().equals(ErrorCode.NOT_FOUND)) {
             Log.info("User doesn't exist.");
             return Result.error(ErrorCode.NOT_FOUND);
         }
-
+        // Checking if the password is correct
         if (users.getUser(userId, password).error().equals(ErrorCode.FORBIDDEN)) {
             Log.info("Password is incorect.");
             return Result.error(ErrorCode.FORBIDDEN);
@@ -271,7 +271,9 @@ public class JavaShorts implements Shorts {
             Short shor = shorts_list.get(0);
             int likes = shor.getTotalLikes();
             shor.setTotalLikes(likes + 1);
+            // Updating short's total likes
             Hibernate.getInstance().update(shor);
+            // Adding Like
             Hibernate.getInstance().persist(like);
         } else {
             // case where a like is removed
@@ -286,7 +288,9 @@ public class JavaShorts implements Shorts {
 
             int likes = shor.getTotalLikes();
             shor.setTotalLikes(likes - 1);
+            // Updating short's total likes
             Hibernate.getInstance().update(shor);
+            // Adding Like
             Hibernate.getInstance().delete(l);
             Log.info("After removing like" + shor.toString());
         }
@@ -319,12 +323,12 @@ public class JavaShorts implements Shorts {
     public Result<List<String>> likeHistory(String userId, String password) {
         // checks if the user provided information is valid
         Users users = UsersClientFactory.getClient();
-
+        // Checking if the user exists
         if (users.getUser(userId, password).error().equals(ErrorCode.NOT_FOUND)) {
             Log.info("User does not exist.");
             return Result.error(ErrorCode.NOT_FOUND);
         }
-
+        // Checking if the password is correct
         if (users.getUser(userId, password).error().equals(ErrorCode.FORBIDDEN)) {
             Log.info("Incorect Password.");
             return Result.error(ErrorCode.FORBIDDEN);
@@ -336,6 +340,7 @@ public class JavaShorts implements Shorts {
         List<String> likedShorts = new ArrayList<>();
 
         for (Likes likes : liked) {
+            // Adding Likes to Likes History
             likedShorts.add(likes.getShortId());
         }
 
@@ -346,6 +351,7 @@ public class JavaShorts implements Shorts {
 
     @Override
     public Result<Void> verifyBlobId(String blobId) {
+        // Verifies if the blobId is valid
         if (!blobs.containsValue(blobId)) {
             return Result.error(ErrorCode.NOT_FOUND);
         }
@@ -360,10 +366,12 @@ public class JavaShorts implements Shorts {
     private String generateBlobLocation(String shortId) {
         try {
             URI blobUri;
-
+            // Retrieves URI from Blobs Factory
             blobUri = BlobsClientFactory.getUri();
+            // Generates blobId
             String blobId = rndId();
             blobs.put(shortId, blobId);
+            // Creates the blob URL
             String blobLocation = String.format(SHORT_LOCATION_FORMAT, blobUri, blobId);
             return blobLocation;
         } catch (InterruptedException e) {
