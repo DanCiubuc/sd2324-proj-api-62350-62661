@@ -126,13 +126,13 @@ public class JavaShorts implements Shorts {
 
         String blobUrl = shortObj.getBlobUrl();
         // finds the index where ADDRESS_ID_SEPARATOR starts
-        int lastSlashIndex = blobUrl.lastIndexOf(DELIMITER, blobUrl.lastIndexOf(ADDRESS_ID_SEPARATOR) - 1);
+        int lastSlashIndex = blobUrl.lastIndexOf("/", blobUrl.lastIndexOf("blobs/") - 1);
         // the string that starts at 0 and ends at lastStashIndex correspondes with the
         // address of the blob server where the short is stored
         String blobsAddress = blobUrl.substring(0, lastSlashIndex);
         // the rest of the string, after the ADDRESS_ID_SEPARATOR, corresponds with the
         // id of the blob
-        String blobId = blobUrl.substring(blobUrl.lastIndexOf(DELIMITER) + 1);
+        String blobId = blobUrl.substring(blobUrl.lastIndexOf("/") + 1);
 
         // Communicate with Blob Service that stores this shorts video
         Blobs blobsService = BlobsClientFactory.getClient(blobsAddress);
