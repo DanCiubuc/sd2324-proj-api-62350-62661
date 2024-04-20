@@ -2,7 +2,6 @@ package tukano.clients;
 
 import java.net.URI;
 import java.util.List;
-import java.util.logging.Logger;
 
 import tukano.api.java.Blobs;
 import tukano.clients.rest.RestBlobsClient;
@@ -16,8 +15,6 @@ import utils.Discovery;
  * 
  */
 public class BlobsClientFactory {
-    private static Logger Log = Logger.getLogger(BlobsClientFactory.class.getName());
-
     private static List<URI> blobsUris;
     private static int currentIdx = 0;
     // Variable to insure a round-robin distribution. We need this to deal with

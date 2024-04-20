@@ -3,7 +3,6 @@ package tukano.clients.rest;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
@@ -18,7 +17,6 @@ import java.util.function.Supplier;
 import static tukano.api.java.Result.ErrorCode;
 import static tukano.api.java.Result.error;
 import static tukano.api.java.Result.ok;
-import static tukano.clients.rest.RestBlobsClient.getErrorCodeFrom;
 
 public class RestClient {
 

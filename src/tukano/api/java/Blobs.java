@@ -1,6 +1,5 @@
 package tukano.api.java;
 
-import java.net.URI;
 import java.util.function.Consumer;
 
 /**

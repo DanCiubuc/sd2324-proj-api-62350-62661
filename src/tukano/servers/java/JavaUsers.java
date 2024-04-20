@@ -1,12 +1,8 @@
 package tukano.servers.java;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 import tukano.api.User;
 import tukano.api.java.Result;
@@ -80,7 +76,7 @@ public class JavaUsers implements Users {
         // With this code block we pass test 2 but fail test 8a
         // The id of the User can't be changed
         // user.getUserId() != null ||
-        if(user.getUserId() != null) {
+        if (user.getUserId() != null) {
             if (!user.getUserId().equals(userId)) {
                 Log.info("Can't change userId.");
                 return Result.error(ErrorCode.BAD_REQUEST);

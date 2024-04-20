@@ -1,14 +1,12 @@
 package tukano.impl.grpc.clients;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import static tukano.api.java.Result.error;
 import static tukano.api.java.Result.ok;
-import static tukano.impl.grpc.common.DataModelAdaptor.Short_to_GrpcShort;
 import static tukano.impl.grpc.common.DataModelAdaptor.GrpcShort_to_Short;
 
 import io.grpc.ManagedChannelBuilder;

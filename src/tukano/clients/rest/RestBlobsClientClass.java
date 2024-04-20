@@ -21,7 +21,9 @@ public class RestBlobsClientClass {
             case "download":
                 download(args, client);
                 break;
-            // TODO: add remove command
+            case "remove":
+                remove(args, client);
+                break;
         }
     }
 
@@ -68,6 +70,23 @@ public class RestBlobsClientClass {
             Log.info("Downloaded file:" + result.value());
         else
             Log.info("Download file failed with error: " + result.error());
+
+    }
+
+    private static void remove(String[] args, RestBlobsClient client) throws IOException {
+        if (args.length != 3) {
+            System.err.println(
+                    "Use: java tukano.clients.rest.RestClientClass remove url blobId ");
+            return;
+        }
+        String blobId = args[2];
+
+        var result = client.remove(blobId);
+
+        if (result.isOK())
+            Log.info("Remove file:" + result.value());
+        else
+            Log.info("Remove file failed with error: " + result.error());
 
     }
 }

@@ -1,13 +1,10 @@
 package tukano.impl.grpc.common;
 
-import com.google.protobuf.ByteString;
 import tukano.api.User;
 import tukano.api.Short;
 
 import tukano.impl.grpc.generated_java.ShortsProtoBuf.GrpcShort;
 import tukano.impl.grpc.generated_java.UsersProtoBuf.GrpcUser;
-
-import java.util.Arrays;
 
 public class DataModelAdaptor {
 
@@ -47,7 +44,7 @@ public class DataModelAdaptor {
 				.build();
 	}
 
-	private static String emptyStringToNull( String s ) {
-		return s == null || s.isEmpty() ? null: s;
+	private static String emptyStringToNull(String s) {
+		return s == null || s.isEmpty() ? null : s;
 	}
 }
